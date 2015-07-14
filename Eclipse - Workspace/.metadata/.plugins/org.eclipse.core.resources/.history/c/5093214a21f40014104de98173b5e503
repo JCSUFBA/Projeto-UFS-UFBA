@@ -1,0 +1,22 @@
+package br.ufs.dsi.redes_sensores.model;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+public class Grafo {
+	
+	private ArrayList<Vertice> vertices;
+	
+	public Grafo(){
+		vertices = new ArrayList<Vertice>();
+	}
+	
+	public void inserirVerticesPeloArquivo(String caminhoArquivo){
+		try{
+			
+		} catch (IOException e){
+			e.printStackTrace();
+		}
+	}
+
+}

@@ -1,0 +1,635 @@
+package br.ufs.dsi.redes_sensores.tipo_1;
+
+import java.util.ArrayList;
+
+public class Grid {
+	
+	// Constantes
+	private static int QUANT_MAX_NIVEL = 3;
+
+	// Variáveis
+	private Vertice[][] grid;
+	private int dimensaoGrid;
+	private int areaTotalGrid;
+	private double ladoQuadrado;
+	private double alcanceSensor;
+	private double distanciaEntreVertices;
+	private int numParcialVertices;
+	private int numTotalVertices;
+	private boolean comDilution;
+	private boolean eMetodoVetor;
+	private int quantCoresUtilizadas;
+	
+	// Construtor
+	public Grid(double ladoQuadrado, int dimensaoGrid, boolean comDilution, boolean eMetodoVetor){
+		setDimensaoGrid(dimensaoGrid);
+		setLadoQuadrado(ladoQuadrado);
+		setComDilution(comDilution);
+		seteMetodoVetor(eMetodoVetor);
+
+		calculaValoresSemComDilution();
+
+		grid = new Vertice[numParcialVertices][numParcialVertices];
+	}
+	
+	// Método para inicializar variáveis sem / com Dilution
+	private void calculaValoresSemComDilution(){
+		areaTotalGrid = (int) Math.pow(dimensaoGrid, 2);
+		
+		if(this.comDilution)
+			alcanceSensor = ladoQuadrado * Math.sqrt(2);
+		else
+			alcanceSensor = ladoQuadrado;
+		
+		distanciaEntreVertices = ladoQuadrado;
+		numParcialVertices = (int) Math.round((dimensaoGrid / distanciaEntreVertices));
+		numTotalVertices = (int) Math.pow(numParcialVertices, 2);
+	}
+	
+	/**
+	 * Método para iniciar o grid com os vértices, bem como determina a prioridade de cada vértice.
+	 */
+	public void inicializaVertices(){
+		int id = 1;
+		for(int linha = 0; linha < grid.length; linha++)
+			for(int coluna = 0; coluna < grid.length; coluna++)
+				grid[linha][coluna] = new Vertice(id++, linha, coluna);
+		
+		// Se não for Método Vetor, calcula-se as prioridades dos vértices
+		if(!eMetodoVetor)
+			determinaPrioridade();
+	}
+	
+	/**
+	 * Método que determina a prioridade de cada vértice no grid.
+	 */
+	private void determinaPrioridade(){
+		for(int linha = 0; linha < grid.length; linha++)
+			for(int coluna = 0; coluna < grid.length; coluna++){
+				if(isComDilution()){
+					grid[linha][coluna].setPrioridade(retornaPrioridadeVertice(grid[linha][coluna]));
+				} else {
+					grid[linha][coluna].setPrioridade(
+							retornaPrioridadeVertice(retornaVizinhosUmSalto(grid[linha][coluna]).size(), 0, new ArrayList<Integer>(), grid[linha][coluna], false, (byte) 0)
+						);
+				}
+			}
+	}
+	
+	/**
+	 * Método que calcula a prioridade de um vértice (Sem Dilution).
+	 * 
+	 * @param quantVizinhosTotal - Quantidade de vizinhos de um salto de um vértice.
+	 * @param quantVizinhosAtual - Quantidade de vizinhos de um salto analisados.
+	 * @param idVerticesVisitados - Lista com os identificadores dos vizinhos visitados.
+	 * @param verticeAtual - Vértice qualquer do grid, o qual será calculado a prioridade do mesmo.
+	 * @param pararSalto - Variável booleana que indica se deve realizar mais um salto ou não.
+	 * @param nivel - Número do Salto. Seu valor vai até 3 saltos.
+	 * 
+	 * @return Integer - Prioridade do vértice.
+	 */
+	private int retornaPrioridadeVertice(int quantVizinhosTotal, int quantVizinhosAtual, ArrayList<Integer> idVerticesVisitados, Vertice verticeAtual, boolean pararSalto, byte nivel){
+		/* O processamento recursivo irá parar quando os vizinhos dos vizinhos do seu
+		 * último vizinho forem visitados. 
+		 */
+		if(quantVizinhosAtual == quantVizinhosTotal){
+			// Remove o vértice desejado da lista de vértices visitados
+			if(nivel == 0){
+				idVerticesVisitados.remove(0);
+			}
+		} else {
+			// Se um vértice não está contido na lista, deve-se incluí-lo
+			if(!idVerticesVisitados.contains(verticeAtual.getIdentificador())){
+				idVerticesVisitados.add(verticeAtual.getIdentificador());
+			}
+			
+			// Determina se deve realizar um salto ou não
+			pararSalto = (nivel == QUANT_MAX_NIVEL) ? true : false;
+			
+			// Caso deva-se realizar um salto, serão visitados os vizinhos dos vizinhos dos vizinhos do vértice em questão
+			if(!pararSalto){
+				Vertice novoAtual = retornaVizinhosUmSalto(verticeAtual).get(quantVizinhosAtual);
+				int novoTotal = retornaVizinhosUmSalto(novoAtual).size();
+				nivel++;
+				retornaPrioridadeVertice(novoTotal, 0, idVerticesVisitados, novoAtual, pararSalto, nivel);
+				nivel--;
+				quantVizinhosAtual++;
+				retornaPrioridadeVertice(quantVizinhosTotal, quantVizinhosAtual, idVerticesVisitados, verticeAtual, pararSalto, nivel);
+			}
+		}
+		return idVerticesVisitados.size();
+	}
+	
+	/**
+	 * Método que calcula a prioridade de um vértice (Com Dilution).
+	 * 
+	 * @param vertice - Vértice qualquer do grid, o qual será calculado a prioridade do mesmo.
+	 * 
+	 * @return Integer - Prioridade do vértice.
+	 */
+	private int retornaPrioridadeVertice(Vertice vertice){
+		int quantVizinhos = 0;
+		
+		int linha = ((vertice.getPosicaoX() - 3) < 0) ? 0 : (vertice.getPosicaoX() - 3);
+		while(linha <= (vertice.getPosicaoX() + 3) && linha < grid.length){
+			int coluna = ((vertice.getPosicaoY() - 3) < 0) ? 0 : (vertice.getPosicaoY() - 3);
+			while(coluna <= (vertice.getPosicaoY() + 3) && coluna < grid.length){
+				if(grid[linha][coluna].getIdentificador() != vertice.getIdentificador()){
+					quantVizinhos++;
+				}
+				coluna++;
+			}
+			linha++;
+		}
+		
+		return quantVizinhos;
+	}
+	
+	/**
+	 * Método que retorna uma lista com os vizinhos de um salto de um vértice (Sem Dilution).
+	 * 
+	 * @param vertice - Vértice qualquer do grid.
+	 * 
+	 * @return ArrayList - Lista com os vizinhos de um salto do vértice escolhido.
+	 */
+	private ArrayList<Vertice> retornaVizinhosUmSalto(Vertice vertice){
+		ArrayList<Vertice> vizinhos = new ArrayList<Vertice>();
+		
+		// Posição Vertical: (X - 1, Y) e (X + 1, Y)
+		int posicao = vertice.getPosicaoX() - 1;
+		if(posicao >= 0){
+			vizinhos.add(grid[posicao][vertice.getPosicaoY()]);
+		}
+		if((posicao + 2) < grid.length){
+			posicao += 2;
+			vizinhos.add(grid[posicao][vertice.getPosicaoY()]);
+		}
+		
+		// Posição Horizontal: (X, Y - 1) e (X, Y + 1)
+		posicao = vertice.getPosicaoY() - 1;
+		if(posicao >= 0){
+			vizinhos.add(grid[vertice.getPosicaoX()][posicao]);
+		}
+		if((posicao + 2) < grid.length){
+			posicao += 2;
+			vizinhos.add(grid[vertice.getPosicaoX()][posicao]);
+		}
+				
+		return vizinhos;
+	}
+	
+	/**
+	 * Método que transforma um grid em um vetor ordenado em ordem decrescente pela prioridade e crescente pelo identificador.
+	 * 
+	 * @return Vertice[] - um vetor de vértices ordenado em ordem decrescente pela prioridade e crescente pelo identificador.
+	 */
+	private Vertice[] transformaGridEmVetorOrdenadoPriori(){
+		
+		// Cria um vetor com a quantidade de vértices do grid
+		Vertice[] retorno = new Vertice[grid.length * grid.length];
+		
+		// Atribui cada a posição do vetor um vértice do grid 
+		int posicao = 0;
+		for(int linha = 0; linha < grid.length; linha++)
+			for(int coluna = 0; coluna < grid.length; coluna++)
+				retorno[posicao++] = grid[linha][coluna];
+		
+		// Ordena o vetor
+		Utilidade.ordenaListaVertices(retorno, 0, retorno.length - 1);
+		
+		// Atribui a cada vértice, a sua posição na lista de prioridades
+		for(posicao = 0; posicao < retorno.length; posicao++){
+			retorno[posicao].setOrdemListaPriori(posicao);
+		}
+		
+		return retorno;
+	}
+	
+	/**
+	 * Método que retorna uma lista com as posições na lista de prioridades para os vértices
+	 * mais próximos do vértice passado como parâmetro, os quais devem ter a mesma cor desse
+	 * vértice (Sem Dilution).
+	 *  
+	 * @return ArrayList - lista com as posições na lista de prioridades para os vértices
+	 * mais próximos do vértice passado como parâmetro, os quais devem ter a mesma cor desse vértice.
+	 * 
+	 * @param vertice - Vértice qualquer no grid.
+	 */
+	private ArrayList<Integer> retornaPosicaoListaPrioriVerticesComMesmaCor(Vertice vertice){
+		ArrayList<Integer> verticesMesmaCor = new ArrayList<Integer>();
+		
+		// Posição Vertical: (X - 4, Y) e (X + 4, Y)
+		int posicao = vertice.getPosicaoX() - 4;
+		if(posicao >= 0){
+			verticesMesmaCor.add(grid[posicao][vertice.getPosicaoY()].getOrdemListaPriori());
+		}
+		if((posicao + 8) < grid.length){
+			posicao += 8;
+			verticesMesmaCor.add(grid[posicao][vertice.getPosicaoY()].getOrdemListaPriori());
+		}
+		
+		// Posição Horizontal: (X, Y - 4) e (X, Y + 4)
+		posicao = vertice.getPosicaoY() - 4;
+		if(posicao >= 0){
+			verticesMesmaCor.add(grid[vertice.getPosicaoX()][posicao].getOrdemListaPriori());
+		}
+		if((posicao + 8) < grid.length){
+			posicao += 8;
+			verticesMesmaCor.add(grid[vertice.getPosicaoX()][posicao].getOrdemListaPriori());
+		}
+		
+		// Determina-se os vértices das diagonais, quando não é com dilution
+		if(!isComDilution()){
+			
+			// Diagonal Primária: (X - 2, Y - 2) e (X + 2, Y + 2)
+			posicao = vertice.getPosicaoX() - 2;
+			int posicao2 = vertice.getPosicaoY() - 2;
+	
+			if(posicao >= 0 && posicao2 >= 0){
+				verticesMesmaCor.add(grid[posicao][posicao2].getOrdemListaPriori());
+			}
+			if((posicao + 4) < grid.length && (posicao2 + 4) < grid.length){
+				posicao += 4;
+				posicao2 += 4;
+				verticesMesmaCor.add(grid[posicao][posicao2].getOrdemListaPriori());
+			}
+			
+			// Diagonal Secundária: (X + 2, Y - 2) e (X - 2, Y + 2) 
+			posicao = vertice.getPosicaoX() + 2;
+			posicao2 = vertice.getPosicaoY() - 2;
+	
+			if(posicao < grid.length && posicao2 >= 0){
+				verticesMesmaCor.add(grid[posicao][posicao2].getOrdemListaPriori());
+			}
+			if((posicao - 4) >= 0 && (posicao2 + 4) < grid.length){
+				posicao -= 4;
+				posicao2 += 4;
+				verticesMesmaCor.add(grid[posicao][posicao2].getOrdemListaPriori());
+			}
+		}
+		
+		return verticesMesmaCor;
+	}
+	
+	/**
+	 * Método que retorna uma lista com as posições na lista de prioridades
+	 * para os vizinhos dos vizinhos dos vizinhos de um salto de um vértice.
+	 * 
+	 * @param quantVizinhosTotal - Quantidade de vizinhos de um salto de um vértice.
+	 * @param quantVizinhosAtual - Quantidade de vizinhos de um salto analisados.
+	 * @param posicaoVerticesVisitados - Lista com a posição no vetor de vértices dos vizinhos
+	 * que foram visitados.
+	 * @param posicaoVerticeAtual - Posição do vértice a ser analisado no vetor de vértices. 
+	 * @param pararSalto - Variável booleana que indica se deve realizar mais um salto ou não.
+	 * @param nivel - Número do Salto. Seu valor vai até 3 saltos.
+	 * @param vertices - Vetor de vértices ordenados pela prioridade e pelo identificador.
+	 * 
+	 * @return ArrayList - Lista com a posição no vetor de vértices dos vizinhos
+	 * que foram visitados.
+	 */
+	private ArrayList<Integer> retornaPosicaoListaPrioriVizinhosAte3Saltos(int quantVizinhosTotal, int quantVizinhosAtual, ArrayList<Integer> posicaoVerticesVisitados, int posicaoVerticeAtual, boolean pararSalto, byte nivel, Vertice[] vertices){
+		/* O processamento recursivo irá parar quando os vizinhos dos vizinhos do seu
+		 * último vizinho forem visitados. 
+		 */
+		if(quantVizinhosAtual == quantVizinhosTotal){
+			// Remove o vértice desejado da lista de vértices visitados
+			if(nivel == 0){
+				posicaoVerticesVisitados.remove(0);
+			}
+		} else {
+			// Se um vértice não está contido na lista, deve-se incluí-lo
+			if(!posicaoVerticesVisitados.contains(posicaoVerticeAtual)){
+				posicaoVerticesVisitados.add(posicaoVerticeAtual);
+			}
+			
+			// Determina se deve realizar um salto ou não
+			pararSalto = (nivel == QUANT_MAX_NIVEL) ? true : false;
+			
+			// Caso deva-se realizar um salto, serão visitados os vizinhos dos vizinhos dos vizinhos do vértice em questão
+			if(!pararSalto){
+				int idNovoAtual = retornaVizinhosUmSalto(vertices[posicaoVerticeAtual]).get(quantVizinhosAtual).getOrdemListaPriori();
+				int novoTotal = retornaVizinhosUmSalto(vertices[idNovoAtual]).size();
+				nivel++;
+				retornaPosicaoListaPrioriVizinhosAte3Saltos(novoTotal, 0, posicaoVerticesVisitados, idNovoAtual, pararSalto, nivel, vertices);
+				nivel--;
+				quantVizinhosAtual++;
+				retornaPosicaoListaPrioriVizinhosAte3Saltos(quantVizinhosTotal, quantVizinhosAtual, posicaoVerticesVisitados, posicaoVerticeAtual, pararSalto, nivel, vertices);
+			}
+		}
+		return posicaoVerticesVisitados;
+	}
+	
+	
+	/**
+	 * Método que permite colorir o grid com coloração de três saltos.
+	 */
+	public void coloreGridTresSaltos() {
+		Vertice[] vetorVerticesOrdPriori = transformaGridEmVetorOrdenadoPriori();
+		
+		// Variável que indica se podemos ou não colorir o vértice com certa cor
+		boolean colorir = true;
+
+		// Vértice com maior prioridade que não foi colorido, deve-se colorir com a cor 1
+		int cor = 1;
+		if(vetorVerticesOrdPriori[0].getCor() == -1) {
+			vetorVerticesOrdPriori[0].setCor(cor++);
+		}
+		
+		// Lista dos vizinhos
+		ArrayList<Integer> vizinhos = new ArrayList<Integer>();
+
+		// para cada vértice do grid, procurar a cor para colorí-lo
+		for (int vertice = 1; vertice < vetorVerticesOrdPriori.length; vertice++) {
+			
+			// Pega os vizinhos do vértice em questão
+			vizinhos = retornaPosicaoListaPrioriVizinhosAte3Saltos(retornaVizinhosUmSalto(vetorVerticesOrdPriori[vertice]).size(), 0, new ArrayList<Integer>(), vetorVerticesOrdPriori[vertice].getOrdemListaPriori(), false, (byte) 0, vetorVerticesOrdPriori);
+			
+			int corAtual = 1;
+			
+			// Variável booleana que indica se o vértice foi colorido
+			boolean flag = false;
+			while(flag == false && corAtual <= cor) {
+				colorir = true;
+				
+				// Analisa se a cor dos vizinhos é igual a corAtual 
+				int cont = 0;
+				while(cont < vizinhos.size() && colorir == true){
+					// Ver a cor do vizinho
+					if (vetorVerticesOrdPriori[vizinhos.get(cont)].getCor() == corAtual)
+						// Se a cor já utilizada pelo vizinho, então não pode utilizar esta cor
+						colorir = false;
+					cont++;
+				}
+				
+				// Colore o vértice quando colorir é igual a true
+				if (colorir == true) {
+					
+					// Analisar os 8 possíveis vértices mais próximos, os quais devem ter a mesma cor
+					ArrayList<Integer> verticesMesmaCor = retornaPosicaoListaPrioriVerticesComMesmaCor(vetorVerticesOrdPriori[vertice]);
+					cont = 0;
+					// Se existe um padrão de cores, então colore-se o vértice com a cor do padrão
+					while(cont < verticesMesmaCor.size() && flag == false){
+						if(vetorVerticesOrdPriori[verticesMesmaCor.get(cont)].getCor() != -1){
+							vetorVerticesOrdPriori[vertice].setCor(vetorVerticesOrdPriori[verticesMesmaCor.get(cont)].getCor());
+							// Indica que o vértice foi colorido
+							flag = true;
+						}
+						cont++;
+					}
+					
+					// Se o vértice não foi colorido, então colore-o com a cor atual
+					if(flag == false){
+						vetorVerticesOrdPriori[vertice].setCor(corAtual);
+						flag = true;
+					}
+				}
+				corAtual++;
+			}
+			
+			// Se não pode colorir o vértice com uma cor, colore-o com a próxima cor
+			if (colorir == false) {
+				cor++;
+				vetorVerticesOrdPriori[vertice].setCor(cor);
+			}
+		}
+		
+		// Armazenando a quantidade de cores utilizada
+		quantCoresUtilizadas = cor;
+	}
+	
+	/**
+	 * Método que permite colorir o grid com coloração de três saltos.
+	 */
+	public void coloreGridTresSaltos3(){
+		
+		// A coloração inicia-se pela cor 1 
+		int cor = 1;
+		
+		// Variável que conta o número de vértices visitados ou que foram coloridos
+		int quantVerticesVisitados = 0;
+		
+		// Whiles que irão varrer o todo o grid ou até que todos os vértices tenham sido coloridos
+		int i = 0;
+
+		while(i < grid.length && quantVerticesVisitados < numTotalVertices){
+			int j = 0;
+			while(j < grid.length && quantVerticesVisitados < numTotalVertices){
+				
+				// Analisa os vértices não coloridos
+				if(grid[i][j].getCor() == -1){
+					
+					/*
+					 * Variável boolean que determina se a análise de
+					 * coloração iniciará na primeira coluna ou não
+					 * 
+					 * True: Será analisado a primeira coluna
+					 * False: Caso contrário.
+					 *  
+					 */
+					boolean flag = true;
+					
+					// Colorir determinados vértices com uma cor
+					for(int linha = i; linha < grid.length; linha += 2){
+						
+						// Determinação do valor da variável coluna a partir do flag
+						int coluna;
+						if(flag){
+							coluna = j;
+						} else {
+							if((j - 2) >= 0){
+								coluna = j - 2;
+							} else {
+								coluna = j + 2;
+							}
+						}
+						
+						// Colore os vértices com uma determinada cor a cada três saltos 
+						while(coluna < grid.length){
+							if(grid[linha][coluna].getCor() == -1){
+								grid[linha][coluna].setCor(cor);
+								quantVerticesVisitados++;
+							}
+							coluna += 4;
+						}
+						
+						/*
+						 *  Alternância do valor de flag, isto é, determinará se
+						 *  a análise iniciará na primeira coluna (true) ou não (false).
+						 */
+						if(flag){
+							flag = false;
+						} else {
+							flag = true;
+						}
+					}
+					/*
+					 *  Após ter colorido os possíveis vértices com uma determinada cor,
+					 *  será utilizada outra cor para colorir outros vértices.
+					 */
+					cor++;
+				}
+				// Incremento da coluna j do grid
+				j++;
+			}
+			// Incremento da linha i do grid
+			i++;
+		}
+		
+		// Armazenando a quantidade de cores utilizada
+		quantCoresUtilizadas = --cor;
+	}
+	
+	/**
+	 * Método que permite colorir o grid com coloração de três saltos.
+	 */
+	public void coloreGridTresSaltos4(){
+		
+		
+		
+		// Whiles que irão varrer o todo o grid ou até que todos os vértices tenham sido coloridos
+		int i = 0;
+
+		while(i < grid.length && quantVerticesVisitados < numTotalVertices){
+			int j = 0;
+			while(j < grid.length && quantVerticesVisitados < numTotalVertices){
+				
+				// Analisa os vértices não coloridos
+				if(grid[i][j].getCor() == -1){
+					
+					// Colorir determinados vértices com uma cor
+					for(int linha = i; linha < grid.length; linha += 4){
+												
+						// Colore os vértices com uma determinada cor a cada três saltos 
+						for(int coluna = j; coluna < grid.length; coluna += 4){
+							if(grid[linha][coluna].getCor() == -1){
+								grid[linha][coluna].setCor(cor);
+								quantVerticesVisitados++;
+							}
+						}
+					}
+					/*
+					 *  Após ter colorido os possíveis vértices com uma determinada cor,
+					 *  será utilizada outra cor para colorir outros vértices.
+					 */
+					cor++;
+				}
+				// Incremento da coluna j do grid
+				j++;
+			}
+			// Incremento da linha i do grid
+			i++;
+		}
+		
+		// Armazenando a quantidade de cores utilizada
+		quantCoresUtilizadas = --cor;
+	}
+	
+	/**
+	 * Método para mostrar o grid pelo id dos vértices.
+	 */
+	public void mostraGrigId(){
+		System.out.println("Visualização do Grid por Id");
+		for(int linha = 0; linha < grid.length; linha++){
+			for(int coluna = 0; coluna < grid.length; coluna++)
+				System.out.print(grid[linha][coluna].getIdentificador() + "\t");
+			System.out.println();
+		}
+	}
+	
+	/**
+	 * Método para mostrar o grid pela prioridade dos vértices.
+	 */
+	public void mostraGrigPriori(){
+		System.out.println("Visualização do Grid por Prioridade");
+		for(int linha = 0; linha < grid.length; linha++){
+			for(int coluna = 0; coluna < grid.length; coluna++)
+				System.out.print(grid[linha][coluna].getPrioridade() + "\t");
+			System.out.println();
+		}
+	}
+	
+	/**
+	 * Método para mostrar o grid pela cor dos vértices.
+	 */
+	public void mostraGrigCor(){
+		System.out.println("Visualização do Grid por Cor");
+		for(int linha = 0; linha < grid.length; linha++){
+			for(int coluna = 0; coluna < grid.length; coluna++)
+				System.out.print(grid[linha][coluna].getCor() + "\t");
+			System.out.println();
+		}
+	}
+	
+	/**
+	 * Método toString, o qual retorna uma string com as informações dos atributos do grid.
+	 * 
+	 * @return String - Sequência de caracteres contendo as informações dos atributos do grid.
+	 */
+	public String toString(){
+		return "Lado do Quadrado do Grid: " + getLadoQuadrado() + "\nDimensão do Grid: " + getDimensaoGrid() + "\nÁrea total do Grid: " +
+				getAreaTotalGrid() + "\nAlcance do Sensor: " + getAlcanceSensor() + "\n" + "Distância entre Vértices: " + getDistanciaEntreVertices() +
+				"\nNúmero Parcial de Vértices: " + getNumParcialVertices() + "\nNúmero Total de Vértices: " + getNumTotalVertices() +
+				"\nQuantidade de Cores Utilizadas: " + getQuantCoresUtilizadas();
+	}
+
+	// Métodos Getters e Setters
+	public int getDimensaoGrid() {
+		return dimensaoGrid;
+	}
+
+	public void setDimensaoGrid(int dimensaoGrid) {
+		this.dimensaoGrid = dimensaoGrid;
+	}
+
+	public double getLadoQuadrado() {
+		return ladoQuadrado;
+	}
+
+	public void setLadoQuadrado(double ladoQuadrado) {
+		this.ladoQuadrado = ladoQuadrado;
+	}
+
+	public Vertice[][] getGrid() {
+		return grid;
+	}
+
+	public int getAreaTotalGrid() {
+		return areaTotalGrid;
+	}
+
+	public double getAlcanceSensor() {
+		return alcanceSensor;
+	}
+
+	public double getDistanciaEntreVertices() {
+		return distanciaEntreVertices;
+	}
+
+	public int getNumParcialVertices() {
+		return numParcialVertices;
+	}
+
+	public int getNumTotalVertices() {
+		return numTotalVertices;
+	}
+	
+	public boolean isComDilution() {
+		return comDilution;
+	}
+
+	public void setComDilution(boolean comDilution) {
+		this.comDilution = comDilution;
+	}
+
+	public boolean iseMetodoVetor() {
+		return eMetodoVetor;
+	}
+
+	public void seteMetodoVetor(boolean eMetodoVetor) {
+		this.eMetodoVetor = eMetodoVetor;
+	}
+
+	public int getQuantCoresUtilizadas() {
+		return quantCoresUtilizadas;
+	}
+}

@@ -1,0 +1,272 @@
+package br.ufs.dsi.redes_sensores.tipo_1;
+
+import br.ufs.dsi.redes_sensores.tipo_2.Vertice;
+
+public class Grid_VM {
+	
+	// Variáveis
+	private Vertice[][] grid;
+	private int dimensaoGrid;
+	private int areaTotalGrid;
+	private double ladoQuadrado;
+	private double alcanceSensor;
+	private double distanciaEntreVertices;
+	private int numParcialVertices;
+	private int numTotalVertices;
+	private boolean comDilution;
+	private int quantCoresUtilizadas;
+	
+	// Construtor
+	public Grid_VM(double ladoQuadrado, int dimensaoGrid, boolean comDilution){
+		setDimensaoGrid(dimensaoGrid);
+		setLadoQuadrado(ladoQuadrado);
+		setComDilution(comDilution);
+
+		calculaValoresSemComDilution();
+
+		grid = new Vertice[numParcialVertices][numParcialVertices];
+	}
+	
+	// Método para inicializar variáveis sem / com Dilution
+	private void calculaValoresSemComDilution(){
+		areaTotalGrid = (int) Math.pow(dimensaoGrid, 2);
+		
+		if(this.comDilution)
+			alcanceSensor = ladoQuadrado * Math.sqrt(2);
+		else
+			alcanceSensor = ladoQuadrado;
+		
+		distanciaEntreVertices = ladoQuadrado;
+		numParcialVertices = (int) Math.round((dimensaoGrid / distanciaEntreVertices));
+		numTotalVertices = (int) Math.pow(numParcialVertices, 2);
+	}
+	
+	/**
+	 * Método para iniciar o grid com os vértices.
+	 */
+	public void inicializaVertices(){
+		int id = 1;
+		for(int linha = 0; linha < grid.length; linha++)
+			for(int coluna = 0; coluna < grid.length; coluna++)
+				grid[linha][coluna] = new Vertice(id++, linha, coluna);
+	}
+	
+	/**
+	 * Método para mostrar o grid pelo id dos vértices.
+	 */
+	public void mostraGrigId(){
+		System.out.println("Visualização do Grid por Id");
+		for(int linha = 0; linha < grid.length; linha++){
+			for(int coluna = 0; coluna < grid.length; coluna++)
+				System.out.print(grid[linha][coluna].getIdentificador() + "\t");
+			System.out.println();
+		}
+	}
+	
+	/**
+	 * Método para mostrar o grid pela cor dos vértices.
+	 */
+	public void mostraGrigCor(){
+		System.out.println("Visualização do Grid por Cor");
+		for(int linha = 0; linha < grid.length; linha++){
+			for(int coluna = 0; coluna < grid.length; coluna++)
+				System.out.print(grid[linha][coluna].getCor() + "\t");
+			System.out.println();
+		}
+	}
+	
+	/**
+	 * Método que permite colorir o grid com coloração de três saltos.
+	 */
+	public void coloreGridTresSaltos(){
+		
+		// A coloração inicia-se pela cor 1 
+		int cor = 1;
+		
+		// Variável que conta o número de vértices visitados ou que foram coloridos
+		int quantVerticesVisitados = 0;
+		
+		/*
+		 * Variável boolean que determina se a análise de
+		 * coloração iniciará na primeira coluna ou não
+		 */
+		boolean flag;
+		
+		// Whiles que irão varrer o todo o grid ou até que todos os vértices tenham sido coloridos
+		int i = 0;
+
+		while(i < grid.length && quantVerticesVisitados < numTotalVertices){
+			int j = 0;
+			while(j < grid.length && quantVerticesVisitados < numTotalVertices){
+				
+				// Analisa os vértices não coloridos
+				if(grid[i][j].getCor() == -1){
+					
+					// Será analisado a primeira coluna
+					flag = true;
+					
+					// Colorir determinados vértices com uma cor
+					for(int linha = i; linha < grid.length; linha += 2){
+						
+						// Determinação do valor da variável coluna a partir do flag
+						int coluna;
+						if(flag){
+							coluna = j;
+						} else {
+							if((j - 2) >= 0){
+								coluna = j - 2;
+							} else {
+								coluna = j + 2;
+							}
+						}
+						
+						// Colore os vértices com uma determinada cor a cada três saltos 
+						while(coluna < grid.length){
+							if(grid[linha][coluna].getCor() == -1){
+								grid[linha][coluna].setCor(cor);
+								quantVerticesVisitados++;
+							}
+							coluna += 4;
+						}
+						
+						/*
+						 *  Alternância do valor de flag, isto é, determinará se
+						 *  a análise iniciará na primeira coluna (true) ou não (false).
+						 */
+						if(flag){
+							flag = false;
+						} else {
+							flag = true;
+						}
+					}
+					/*
+					 *  Após ter colorido os possíveis vértices com uma determinada cor,
+					 *  será utilizada outra cor para colorir outros vértices.
+					 */
+					cor++;
+				}
+				// Incremento da coluna j do grid
+				j++;
+			}
+			// Incremento da linha i do grid
+			i++;
+		}
+		
+		// Armazenando a quantidade de cores utilizada
+		quantCoresUtilizadas = --cor;
+	}
+	
+	/**
+	 * Método que permite colorir o grid com coloração de três saltos.
+	 */
+	public void coloreGridTresSaltos2(){
+		
+		// A coloração inicia-se pela cor 1 
+		int cor = 1;
+		
+		// Variável que conta o número de vértices visitados ou que foram coloridos
+		int quantVerticesVisitados = 0;
+		
+		// Whiles que irão varrer o todo o grid ou até que todos os vértices tenham sido coloridos
+		int i = 0;
+
+		while(i < grid.length && quantVerticesVisitados < numTotalVertices){
+			int j = 0;
+			while(j < grid.length && quantVerticesVisitados < numTotalVertices){
+				
+				// Analisa os vértices não coloridos
+				if(grid[i][j].getCor() == -1){
+					
+					// Colorir determinados vértices com uma cor
+					for(int linha = i; linha < grid.length; linha += 4){
+												
+						// Colore os vértices com uma determinada cor a cada três saltos 
+						for(int coluna = j; coluna < grid.length; coluna += 4){
+							if(grid[linha][coluna].getCor() == -1){
+								grid[linha][coluna].setCor(cor);
+								quantVerticesVisitados++;
+							}
+						}
+					}
+					/*
+					 *  Após ter colorido os possíveis vértices com uma determinada cor,
+					 *  será utilizada outra cor para colorir outros vértices.
+					 */
+					cor++;
+				}
+				// Incremento da coluna j do grid
+				j++;
+			}
+			// Incremento da linha i do grid
+			i++;
+		}
+		
+		// Armazenando a quantidade de cores utilizada
+		quantCoresUtilizadas = --cor;
+	}
+	
+	/**
+	 * Método toString, o qual retorna uma string com as informações dos atributos do grid.
+	 * 
+	 * @return String - Sequência de caracteres contendo as informações dos atributos do grid.
+	 */
+	public String toString(){
+		return "Lado do Quadrado do Grid: " + getLadoQuadrado() + "\nDimensão do Grid: " + getDimensaoGrid() + "\nÁrea total do Grid: " +
+				getAreaTotalGrid() + "\nAlcance do Sensor: " + getAlcanceSensor() + "\n" + "Distância entre Vértices: " + getDistanciaEntreVertices() +
+				"\nNúmero Parcial de Vértices: " + getNumParcialVertices() + "\nNúmero Total de Vértices: " + getNumTotalVertices() +
+				"\nQuantidade de Cores Utilizadas: " + getQuantCoresUtilizadas();
+	}
+	
+	// Métodos Getters e Setters
+	public int getDimensaoGrid() {
+		return dimensaoGrid;
+	}
+
+	public void setDimensaoGrid(int dimensaoGrid) {
+		this.dimensaoGrid = dimensaoGrid;
+	}
+
+	public double getLadoQuadrado() {
+		return ladoQuadrado;
+	}
+
+	public void setLadoQuadrado(double ladoQuadrado) {
+		this.ladoQuadrado = ladoQuadrado;
+	}
+
+	public Vertice[][] getGrid() {
+		return grid;
+	}
+
+	public int getAreaTotalGrid() {
+		return areaTotalGrid;
+	}
+
+	public double getAlcanceSensor() {
+		return alcanceSensor;
+	}
+
+	public double getDistanciaEntreVertices() {
+		return distanciaEntreVertices;
+	}
+
+	public int getNumParcialVertices() {
+		return numParcialVertices;
+	}
+
+	public int getNumTotalVertices() {
+		return numTotalVertices;
+	}
+	
+	public boolean isComDilution() {
+		return comDilution;
+	}
+
+	public void setComDilution(boolean comDilution) {
+		this.comDilution = comDilution;
+	}
+
+	public int getQuantCoresUtilizadas() {
+		return quantCoresUtilizadas;
+	}
+}

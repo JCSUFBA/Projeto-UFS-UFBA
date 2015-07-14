@@ -1,0 +1,70 @@
+package br.ufs.dsi.redes_sensores.exec;
+
+import javax.swing.JOptionPane;
+import br.ufs.dsi.redes_sensores.tipo_1.Grid;
+
+public class Execucao {
+	
+	public static enum tipo_projeto {TIPO_1, TIPO_2};
+	
+	/**
+	 * Método para executar o projeto do tipo 2.
+	 * 
+	 * @param raioGrid - Raio do sensor.
+	 * @param dimensaoGrid - Dimensão do grid, ou seja, o valor do lado do grid. 
+	 * @param comDilution - Variável booleana que indicar se será utilizado Dilution.
+	 */
+	/*private static void executarProjetoTipo2(double raioGrid, int dimensaoGrid, boolean comDilution){
+			}*/
+
+	/**
+	 * Método main para executar os projetos.
+	 */
+	public static void main(String[] args) {
+		int tipo = Integer.parseInt(JOptionPane.showInputDialog(null,
+				"Informe o tipo do projeto:\n" +
+				"1- Coloração com Cálculo de Prioridade\n" +
+				"2- Coloração por Método Vetor", "Entrada", JOptionPane.QUESTION_MESSAGE));
+		
+		// True: Método Vetor | False: Coloração Baseada em Prioridades
+		boolean eMetodoVetor = (--tipo == tipo_projeto.TIPO_2.ordinal());
+		int dimensaoGrid = Integer.parseInt(JOptionPane.showInputDialog(null, "Entre com os valores da área (M) x (M)", "Entrada", JOptionPane.QUESTION_MESSAGE));
+		double ladoQuadrado = Double.parseDouble(JOptionPane.showInputDialog(null, "Entre com o valor do lado quadrado do grid \n (Use o ponto como separador de casas decimais)", "Entrada", JOptionPane.QUESTION_MESSAGE));
+		int simOuNao = JOptionPane.showConfirmDialog(null, "Deseja executar o projeto com Dilution?", "Entrada", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		boolean comDilution = (simOuNao == JOptionPane.YES_OPTION) ? true : false;
+		
+		Grid grid = new Grid(ladoQuadrado, dimensaoGrid, comDilution, eMetodoVetor);
+		
+		// Inicializa o grid com os vértices
+		grid.inicializaVertices();
+		
+		// Mostra o grid pelos identificadores
+		grid.mostraGrigId();
+		System.out.println();
+		
+		// Mostra o grid pelas prioridades
+		if(!grid.isMetodoVetor())
+			grid.mostraGrigPriori();
+		System.out.println();
+		
+		// Variável para determinar o tempo para colorir o grid (tempo em milisegundos)
+		long tempo = System.currentTimeMillis();
+		
+		// Colore o grid
+		grid.coloreGridTresSaltos();
+		
+		// Tempo Total = Tempo Final - Tempo Inicial
+		tempo = System.currentTimeMillis() - tempo;
+		System.out.println("Tempo de Processamento em milisegundos: " + tempo);
+		System.out.println();
+		
+		// Mostra o grid pelas cores
+		grid.mostraGrigCor();
+		
+		// Mostra informações do grid
+		System.out.println();
+		System.out.println(grid.toString());
+
+		
+	}
+}

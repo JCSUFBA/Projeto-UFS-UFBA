@@ -1,0 +1,12 @@
+1436814067109	Rename field 'raioLadoGrid'
+1436814086976	Rename local variable 'raioLadoGrid'
+1436814103903	Rename method 'setRaioLadoGrid'
+1436814370391	Rename method 'calculaValoresComDilution'
+1436830558307	Move compilation unit
+1436830698472	Delete element
+1436830705140	Delete element
+1436832682115	Delete element
+1436834871238	Rename method 'iseMetodoVetor'
+1436834881650	Rename method 'seteMetodoVetor'
+1436836147318	Rename type 'tipo_projeto'
+1436836465677	Rename package 'br.ufs.dsi.redes_sensores.tipo_1'
