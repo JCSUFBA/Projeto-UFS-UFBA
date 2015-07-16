@@ -1,6 +1,7 @@
 package br.ufs.dsi.redes_sensores.project;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Grid {
 	
@@ -185,19 +186,24 @@ public class Grid {
 	 * 
 	 * @return ArrayList - Lista com os vizinhos de N saltos do vértice escolhido.
 	 */
-	public ArrayList<Vertice> retornaVizinhosNSalto(Vertice vertice, int quantSaltos){
-		ArrayList<Vertice> vizinhos = new ArrayList<Vertice>();
+	public HashMap<Vertice, Integer> retornaVizinhosNSalto(Vertice vertice, int quantSaltos){
+		HashMap<Vertice, Integer> vizinhos = new HashMap<Vertice, Integer>();
 		
-		int linha = ((vertice.getPosicaoX() - quantSaltos) < 0) ? 0 : (vertice.getPosicaoX() - quantSaltos);
-		while(linha <= (vertice.getPosicaoX() + quantSaltos) && linha < grid.length){
-			int coluna = ((vertice.getPosicaoY() - quantSaltos) < 0) ? 0 : (vertice.getPosicaoY() - quantSaltos);
-			while(coluna <= (vertice.getPosicaoY() + quantSaltos) && coluna < grid.length){
-				if(grid[linha][coluna].getIdentificador() != vertice.getIdentificador()){
-					vizinhos.add(grid[linha][coluna]);
+		int salto = 1;
+		
+		while(salto <= quantSaltos){		
+			int linha = ((vertice.getPosicaoX() - salto) < 0) ? 0 : (vertice.getPosicaoX() - salto);
+			while(linha <= (vertice.getPosicaoX() + salto) && linha < grid.length){
+				int coluna = ((vertice.getPosicaoY() - salto) < 0) ? 0 : (vertice.getPosicaoY() - salto);
+				while(coluna <= (vertice.getPosicaoY() + salto) && coluna < grid.length){
+					if(grid[linha][coluna].getIdentificador() != vertice.getIdentificador() && !vizinhos.containsKey(grid[linha][coluna])){
+						vizinhos.put(grid[linha][coluna], salto);
+					}
+					coluna++;
 				}
-				coluna++;
+				linha++;
 			}
-			linha++;
+			salto++;
 		}
 		
 		return vizinhos;
@@ -606,6 +612,7 @@ public class Grid {
 	 * 
 	 * @return String - Sequência de caracteres contendo as informações dos atributos do grid.
 	 */
+	@Override
 	public String toString(){
 		return "Lado do Quadrado do Grid: " + getLadoQuadrado() + "\nDimensão do Grid: " + getDimensaoGrid() + "\nÁrea total do Grid: " +
 				getAreaTotalGrid() + "\nAlcance do Sensor: " + getAlcanceSensor() + "\n" + "Distância entre Vértices: " + getDistanciaEntreVertices() +

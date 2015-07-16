@@ -1,8 +1,8 @@
 package br.ufs.dsi.redes_sensores.exec;
 
+import java.util.HashMap;
 import javax.swing.JOptionPane;
-
-import br.ufs.dsi.redes_sensores.project.Grid;
+import br.ufs.dsi.redes_sensores.project.*;
 
 public class Execucao {
 	
@@ -59,5 +59,14 @@ public class Execucao {
 		// Mostra informações do grid
 		System.out.println();
 		System.out.println(grid.toString());
+		
+		// Verificando os vizinhos de um determinado vértice
+		System.out.println();
+		int linha = Integer.parseInt(JOptionPane.showInputDialog(null, "Entre com o valor da linha do vértice (1 - " + grid.getNumParcialVertices() + ")", "Entrada", JOptionPane.QUESTION_MESSAGE));
+		int coluna = Integer.parseInt(JOptionPane.showInputDialog(null, "Entre com o valor da coluna do vértice (1 - " + grid.getNumParcialVertices() + ")", "Entrada", JOptionPane.QUESTION_MESSAGE));
+		HashMap<Vertice, Integer> vizinhos = grid.retornaVizinhosNSalto(grid.getGrid()[--linha][--coluna], 3);
+		for (Vertice vertice : vizinhos.keySet()) {
+			System.out.println(vizinhos.get(vertice) + " - " + vertice.getIdentificador());
+		}
 	}
 }
