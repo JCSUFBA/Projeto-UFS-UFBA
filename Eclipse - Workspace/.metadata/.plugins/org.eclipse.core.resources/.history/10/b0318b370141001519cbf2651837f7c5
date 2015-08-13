@@ -1,0 +1,14 @@
+package proj_dist;
+
+public class Distancia {
+
+	// Atributos
+	private int vertice;
+	private double distancia;
+	
+	// Construtor
+	public Distancia() {
+		
+	}
+
+}

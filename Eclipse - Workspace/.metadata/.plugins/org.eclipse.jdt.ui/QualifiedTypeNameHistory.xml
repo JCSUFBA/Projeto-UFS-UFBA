@@ -23,7 +23,6 @@
 <fullyQualifiedTypeName name="java.util.Vector"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="br.ufs.dsi.redes_sensores.model2.Utilidade"/>
-<fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="java.util.Scanner"/>
 <fullyQualifiedTypeName name="br.ufs.dsi.redes_sensores.model3.Grid"/>
 <fullyQualifiedTypeName name="java.lang.System"/>
@@ -32,5 +31,11 @@
 <fullyQualifiedTypeName name="br.ufs.dsi.redes_sensores.tipo_2.Grid"/>
 <fullyQualifiedTypeName name="br.ufs.dsi.redes_sensores.tipo_2.Grid_VM"/>
 <fullyQualifiedTypeName name="javax.swing.JOptionPane"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
+<fullyQualifiedTypeName name="proj_dist.Algoritmo_Distribuido"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="proj_dist.Distancia"/>
+<fullyQualifiedTypeName name="java.lang.reflect.Array"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 </qualifiedTypeNameHistroy>

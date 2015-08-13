@@ -1,0 +1,44 @@
+package proj_dist;
+
+/**
+ * Classe responsável pela ordenação do vetor de vértices.
+ */
+public class Utilidade {
+	
+	/**
+	 * Método Quicksort que ordena um vetor de vértices em ordem crescente pela distância
+	 * e em ordem crescente pelo identificador.
+	 * @param distancias - vetor de vértices a ser ordenado.
+	 * @param inicio - posição inicial do vetor.
+	 * @param fim - posição final do vetor.
+	 */
+	protected static void ordenaListaVertices(Distancia[] distancias, int inicio, int fim)
+	{
+		int i = inicio, f = fim;
+		Distancia pivo = distancias[fim];
+		while (i <= f)
+		{
+			while (distancias[i].get > pivo.getPrioridade()
+					|| (distancias[i].getPrioridade() == pivo.getPrioridade() && distancias[i].getIdentificador() < pivo.getIdentificador())
+					)
+				i++;
+			while (distancias[f].getPrioridade() < pivo.getPrioridade()
+					|| (distancias[f].getPrioridade() == pivo.getPrioridade() && distancias[f].getIdentificador() > pivo.getIdentificador())
+					)
+				f--;
+
+			if (i <= f)
+			{
+				Vertice aux = distancias[i];
+				distancias[i] = distancias[f];
+				distancias[f] = aux;
+				i++;
+				f--;
+			}
+		}
+		if (f > inicio)
+			ordenaListaVertices(distancias, inicio, f);
+		if (i < fim)
+			ordenaListaVertices(distancias, i, fim);
+	}
+}
