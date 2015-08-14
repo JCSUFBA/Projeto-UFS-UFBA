@@ -252,7 +252,7 @@ public class Algoritmo_Distribuido {
 				int cont = 0;
 				while(cont < vizinhos.size() && colorir == true){
 					// Ver a cor do vizinho
-					if (vetorVerticesOrdPriori[vertices.get(vizinhos.get(cont)).getOrdemListaPriori()].getCor() == corAtual)
+					if (vertices.get(vizinhos.get(cont)).getCor() == corAtual)
 						// Se a cor já utilizada pelo vizinho, então não pode utilizar esta cor
 						colorir = false;
 					cont++;
@@ -293,9 +293,10 @@ public class Algoritmo_Distribuido {
 	 */
 	public void mostraIdPosicoes(){
 		System.out.println("Visualização dos Vértices por Id e Posição");
+		System.out.println("Id\t\tPosição X\t\t\tPosição Y");
 		for (VerticeDist vertice : vertices) {
-			System.out.println(vertice.getIdentificador() + " - " +
-					vertice.getPosicaoX() + " - " + vertice.getPosicaoY()
+			System.out.println(vertice.getIdentificador() + "\t\t" +
+					vertice.getPosicaoX() + "\t\t" + vertice.getPosicaoY()
 			);
 		}
 	}
@@ -305,8 +306,9 @@ public class Algoritmo_Distribuido {
 	 */
 	public void mostraPrioridades(){
 		System.out.println("Visualização dos Vértices por Prioridade");
+		System.out.println("Id\t\tPrioridade");
 		for (VerticeDist vertice : vertices) {
-			System.out.println(vertice.getIdentificador() + " - " + vertice.getPrioridade());
+			System.out.println(vertice.getIdentificador() + "\t\t" + vertice.getPrioridade());
 		}
 	}
 	
@@ -315,8 +317,9 @@ public class Algoritmo_Distribuido {
 	 */
 	public void mostraCor(){
 		System.out.println("Visualização dos Vértices por Cor");
+		System.out.println("Id\t\tCor");
 		for (VerticeDist vertice : vertices) {
-			System.out.println(vertice.getIdentificador() + " - " + vertice.getCor());
+			System.out.println(vertice.getIdentificador() + "\t\t" + vertice.getCor());
 		}
 	}
 	
@@ -326,7 +329,7 @@ public class Algoritmo_Distribuido {
 	public void mostraVerticesComVizinhosUmSalto(){
 		System.out.println("Visualização dos Vértices com Seus Vizinhos de Um Salto");
 		for (VerticeDist vertice : vertices) {
-			System.out.println("Vértice " + vertice.getIdentificador() + ":");
+			System.out.println("\nVértice " + vertice.getIdentificador() + ":");
 			if(vertice.getDistancias().size() > 0){
 				for(Distancia distancia : vertice.getDistancias()){
 					System.out.print(distancia.getVertice() + "\t");

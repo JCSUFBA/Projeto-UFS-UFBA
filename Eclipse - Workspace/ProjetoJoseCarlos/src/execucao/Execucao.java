@@ -90,10 +90,6 @@ public class Execucao {
 			// Inicializa os vértices
 			dist.inicializaVertices();
 			
-			// Mostra o vértices pelos identificadores
-			dist.mostraId();
-			System.out.println();
-			
 			// Mostra o vértices pelos identificadores e posições
 			dist.mostraIdPosicoes();
 			System.out.println();
