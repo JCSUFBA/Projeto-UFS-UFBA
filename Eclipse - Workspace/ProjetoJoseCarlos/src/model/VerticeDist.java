@@ -1,12 +1,12 @@
 package model;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class VerticeDist extends Vertice {
 	
 	// Atributos
 	private double posicaoX, posicaoY;
-	private ArrayList<Distancia> distancias;
+	private HashMap<Integer, Double> vizinhos;
 	
 	// Métodos Construtores
 	public VerticeDist(){
@@ -40,11 +40,11 @@ public class VerticeDist extends Vertice {
 		this.posicaoY = posicaoY;
 	}
 
-	public ArrayList<Distancia> getDistancias() {
-		return distancias;
+	public HashMap<Integer, Double> getVizinhos() {
+		return vizinhos;
 	}
 
-	public void setDistancias(ArrayList<Distancia> distancias) {
-		this.distancias = distancias;
+	public void setVizinhos(HashMap<Integer, Double> vizinhos) {
+		this.vizinhos = vizinhos;
 	}
 }

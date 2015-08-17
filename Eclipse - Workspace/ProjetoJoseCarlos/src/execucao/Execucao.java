@@ -102,6 +102,14 @@ public class Execucao {
 			dist.mostraVerticesComVizinhosUmSalto();
 			System.out.println();
 			
+			// Mostra o vértices pelos identificadores e seus vizinhos de dois saltos
+			dist.mostraVerticesComVizinhosDoisOuTresSaltos((byte) 2);
+			System.out.println();
+			
+			// Mostra o vértices pelos identificadores e seus vizinhos de três saltos
+			dist.mostraVerticesComVizinhosDoisOuTresSaltos((byte) 3);
+			System.out.println();
+			
 			// Variável para determinar o tempo para colorir o grid (tempo em milisegundos)
 			long tempo = System.currentTimeMillis();
 			

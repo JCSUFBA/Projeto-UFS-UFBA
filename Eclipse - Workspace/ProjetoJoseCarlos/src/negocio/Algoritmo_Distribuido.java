@@ -1,16 +1,12 @@
 package negocio;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
-
-import model.Distancia;
 import model.VerticeDist;
 import utils.Utilidade;
 
 public class Algoritmo_Distribuido {
-	
-	// Constantes
-	private static int QUANT_MAX_NIVEL = 3;
 
 	// Variáveis
 	private ArrayList<VerticeDist> vertices;
@@ -93,7 +89,7 @@ public class Algoritmo_Distribuido {
 	private void determinaPrioridade(){
 		// Obtém a lista de distâncias dos vizinhos de um salto de cada vértice
 		for(VerticeDist v : vertices){
-			v.setDistancias(retornaListaDistancias(v.getIdentificador()));
+			v.setVizinhos(retornaListaDistancias(v.getIdentificador()));
 		}
 		
 		// Calcular a prioridade de cada vértice
@@ -109,11 +105,11 @@ public class Algoritmo_Distribuido {
 	 * 
 	 * @param vertice: Identificador do Vértice.
 	 * 
-	 * @return ArrayList : Lista de identificadores e distância dos vizinhos de
+	 * @return HashMap<Integer, Double> : Lista de identificadores e distância dos vizinhos de
 	 * um salto.
 	 */
-	private ArrayList<Distancia> retornaListaDistancias(int vertice){
-		ArrayList<Distancia> distancia = new ArrayList<Distancia>();
+	private HashMap<Integer, Double> retornaListaDistancias(int vertice){
+		HashMap<Integer, Double> vizinhos = new HashMap<Integer, Double>();
 		
 		// Analisa-se todos os vértices, exceto o vértice passado como parâmetro
 		for(VerticeDist v : vertices){
@@ -126,11 +122,11 @@ public class Algoritmo_Distribuido {
 				
 				// Se estiver dentro do alcance do sensor, então é vizinho de um salto
 				if(dist <= getAlcanceSensor()){
-					distancia.add(new Distancia(v.getIdentificador(), dist));
+					vizinhos.put(v.getIdentificador(), dist);
 				}
 			}
 		}
-		return distancia;
+		return vizinhos;
 	}
 	
 	/**
@@ -144,10 +140,11 @@ public class Algoritmo_Distribuido {
 	 * @param vertice - Identificador do vértice a ser analisado. 
 	 * @param pararSalto - Variável booleana que indica se deve realizar mais um salto ou não.
 	 * @param nivel - Número do Salto. Seu valor vai até 3 saltos.
+	 * @param numSaltos - Número de Saltos desejados.
 	 * 
 	 * @return ArrayList - Lista com os identificadores dos vizinhos que foram visitados.
 	 */
-	private ArrayList<Integer> retornaPosicaoVizinhosAte3Saltos(int quantVizinhosTotal, int quantVizinhosAtual, ArrayList<Integer> idVerticesVisitados, int vertice, boolean pararSalto, byte nivel){
+	private ArrayList<Integer> retornaIdVizinhosNSaltos(int quantVizinhosTotal, int quantVizinhosAtual, ArrayList<Integer> idVerticesVisitados, int vertice, boolean pararSalto, byte nivel, byte numSaltos){
 		/* O processamento recursivo irá parar quando os vizinhos dos vizinhos do seu
 		   último vizinho forem visitados.
 		*/
@@ -164,17 +161,18 @@ public class Algoritmo_Distribuido {
 			}
 			
 			// Determina se deve realizar um salto ou não
-			pararSalto = (nivel == QUANT_MAX_NIVEL) ? true : false;
+			pararSalto = (nivel == numSaltos) ? true : false;
 			
 			// Caso deva-se realizar um salto, serão visitados os vizinhos dos vizinhos dos vizinhos do vértice em questão
 			if(!pararSalto){
-				int idNovoAtual = vertices.get(vertice).getDistancias().get(quantVizinhosAtual).getVertice();
-				int novoTotal = vertices.get(idNovoAtual).getDistancias().size();
+				
+				int idNovoAtual = new ArrayList<Integer>(vertices.get(vertice).getVizinhos().keySet()).get(quantVizinhosAtual);
+				int novoTotal = vertices.get(idNovoAtual).getVizinhos().size();
 				nivel++;
-				retornaPosicaoVizinhosAte3Saltos(novoTotal, 0, idVerticesVisitados, idNovoAtual, pararSalto, nivel);
+				retornaIdVizinhosNSaltos(novoTotal, 0, idVerticesVisitados, idNovoAtual, pararSalto, nivel, numSaltos);
 				nivel--;
 				quantVizinhosAtual++;
-				retornaPosicaoVizinhosAte3Saltos(quantVizinhosTotal, quantVizinhosAtual, idVerticesVisitados, vertice, pararSalto, nivel);
+				retornaIdVizinhosNSaltos(quantVizinhosTotal, quantVizinhosAtual, idVerticesVisitados, vertice, pararSalto, nivel, numSaltos);
 			}
 		}
 		return idVerticesVisitados;
@@ -189,8 +187,45 @@ public class Algoritmo_Distribuido {
 	 */
 	private int retornaPrioridadeVertice(int vertice){
 		ArrayList<Integer> idVerticesVisitados = new ArrayList<Integer>();
-		retornaPosicaoVizinhosAte3Saltos(vertices.get(vertice).getDistancias().size(), 0, idVerticesVisitados, vertice, false, (byte) 0);
+		retornaIdVizinhosNSaltos(vertices.get(vertice).getVizinhos().size(), 0, idVerticesVisitados, vertice, false, (byte) 0, (byte) 3);
 		return idVerticesVisitados.size();
+	}
+	
+	/**
+	 * Método que retorna uma lista com os identificadores dos vizinhos de
+	 * dois ou três saltos de um vértice.
+	 * 
+	 * @param vertice - Vértice qualquer da lista, o qual será calculado a prioridade do mesmo.
+	 * @param numSaltos - Número de Saltos (2 ou 3).
+	 * 
+	 * @return ArrayList - Lista com os identificadores dos vizinhos que foram visitados.
+	 */
+	private ArrayList<Integer> retornaVizinhosDoisOuTresSaltos(int vertice, byte numSaltos){
+		// Obtendo os vizinhos de até 'numSaltos' saltos
+		ArrayList<Integer> idVerticesVisitados = new ArrayList<Integer>();
+		retornaIdVizinhosNSaltos(vertices.get(vertice).getVizinhos().size(), 0, idVerticesVisitados, vertice, false, (byte) 0, numSaltos);
+		
+		// Removendo os vizinhos de um salto
+		for(int v1 : vertices.get(vertice).getVizinhos().keySet()){
+			int vizinho = -1;
+			if(idVerticesVisitados.contains(v1)){
+				
+				// Removendo os vizinhos de dois salto
+				if(numSaltos == 3){
+					for(int v2 : vertices.get(v1).getVizinhos().keySet()){
+						if(idVerticesVisitados.contains(v2) && !vertices.get(vertice).getVizinhos().keySet().contains(v2)){
+							vizinho = idVerticesVisitados.indexOf(v2);
+							idVerticesVisitados.remove(vizinho);
+						}
+					}
+				}
+				
+				vizinho = idVerticesVisitados.indexOf(v1);
+				idVerticesVisitados.remove(vizinho);
+			}
+		}
+		
+		return idVerticesVisitados;
 	}
 	
 	/**
@@ -241,7 +276,7 @@ public class Algoritmo_Distribuido {
 			
 			// Pega os vizinhos do vértice em questão
 			// TODO: Ver a questão do dilution nos vizinhos
-			vizinhos = retornaPosicaoVizinhosAte3Saltos(vetorVerticesOrdPriori[vertice].getDistancias().size(), 0, new ArrayList<Integer>(), vetorVerticesOrdPriori[vertice].getIdentificador(), false, (byte) 0);
+			vizinhos = retornaIdVizinhosNSaltos(vetorVerticesOrdPriori[vertice].getVizinhos().size(), 0, new ArrayList<Integer>(), vetorVerticesOrdPriori[vertice].getIdentificador(), false, (byte) 0, (byte) 3);
 			
 			int corAtual = 1;
 			
@@ -327,12 +362,31 @@ public class Algoritmo_Distribuido {
 	 * Método para mostrar os vértices e seus vizinhos de um salto.
 	 */
 	public void mostraVerticesComVizinhosUmSalto(){
-		System.out.println("Visualização dos Vértices com Seus Vizinhos de Um Salto");
+		System.out.println("Visualização dos Vértices com Seus Vizinhos de 1 Salto");
 		for (VerticeDist vertice : vertices) {
 			System.out.println("\nVértice " + vertice.getIdentificador() + ":");
-			if(vertice.getDistancias().size() > 0){
-				for(Distancia distancia : vertice.getDistancias()){
-					System.out.print(distancia.getVertice() + "\t");
+			if(vertice.getVizinhos().size() > 0){
+				for(int vizinho : vertice.getVizinhos().keySet()){
+					System.out.print(vizinho + "\t");
+				}
+			} else {
+				System.out.print("NULL");
+			}
+			System.out.println();
+		}
+	}
+	
+	/**
+	 * Método para mostrar os vértices e seus vizinhos de dois ou três saltos.
+	 */
+	public void mostraVerticesComVizinhosDoisOuTresSaltos(byte numSaltos){
+		System.out.println("Visualização dos Vértices com Seus Vizinhos de " + numSaltos + " Saltos");
+		for (VerticeDist vertice : vertices) {
+			System.out.println("\nVértice " + vertice.getIdentificador() + ":");
+			ArrayList<Integer> vizinhos = retornaVizinhosDoisOuTresSaltos(vertice.getIdentificador(), numSaltos);
+			if(vizinhos.size() > 0){
+				for(int id : vizinhos){
+					System.out.print(id + "\t");
 				}
 			} else {
 				System.out.print("NULL");
