@@ -91,7 +91,7 @@ class ComparadorDeNos implements Comparator<MyNode> {
 public class CustomGlobal extends AbstractCustomGlobal {
 	ArrayList<MyNode> myNodes;
 	Logging myLog = Logging.getLogger("logxxx.txt");
-	private final double raio = 20.0;
+	private final double raio = 1.0;
 	Color[] cores;
 
 	/*
@@ -189,7 +189,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		 * esse loop é respnsavel por identificar quantos nos vai ter e em
 		 * seguinda realiza o teste de posicao de cada um
 		 */
-		for (int id = 0; id < 100; id++) {
+		for (int id = 0; id < 10; id++) {
 			newNode = new MyNode();
 			/**
 			 * Determina aleatoriamente as posições o +10 é para nao adicionar
@@ -236,7 +236,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		 * de vizinhos do no com a maior prioridade
 		 */
 		cores = (myNodes.get(0).getVizinhos().size() > 0) ? new Color[myNodes.get(0).getVizinhos().size() * 4]
-				: new Color[myNodes.size() * 4];
+				: new Color[1];
 		/**
 		 * metodo respnsavel por realizar a adição de todas as cores no vetor
 		 */
