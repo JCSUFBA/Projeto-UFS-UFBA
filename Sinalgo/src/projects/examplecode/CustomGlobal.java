@@ -536,31 +536,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		return false;
 	}
 
-	/**
-	 * metodo responsavel por testar se o a cor que foi gerada para pintar o no
-	 * atual tem algum vizinho com a mesma cor
-	 * metodo pode ser igual ao anterior mas deixei separado só para identificar que um é para cada
-	 * @param node
-	 * @param corSelecionada
-	 * @return
-	 */
-	@Deprecated
-	private boolean conflitoNoAtual(MyNode node, int corSelecionada) {
-		/**
-		 * varre todos os vizinhos em busca de uma cor igual a cor selecionada
-		 */
-		for (int vizinho : node.getVizinhos().keySet()) {
-			/**
-			 * testa se algum vizinho tem a cor igual selecionada para pintar o
-			 * no atual
-			 */
-			if (cores[corSelecionada].getRGB() == myNodes.get(vizinho).getColor().getRGB()) {
-				return true;
-			}
-		}
-
-		return false;
-	}
 
 	/**
 	 * realiza a pintura do no atual
