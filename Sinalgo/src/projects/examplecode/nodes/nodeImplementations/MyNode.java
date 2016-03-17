@@ -39,21 +39,12 @@ package projects.examplecode.nodes.nodeImplementations;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import projects.examplecode.CustomGlobal;
-
-import projects.examplecode.nodes.messages.*;
 import sinalgo.configuration.WrongConfigurationException;
 import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.io.eps.EPSOutputPrintStream;
-import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.nodes.messages.Message;
-import sinalgo.tools.Tools;
 import sinalgo.tools.logging.Logging;
 import sinalgo.nodes.*;
 
