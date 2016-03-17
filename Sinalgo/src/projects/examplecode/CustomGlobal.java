@@ -91,7 +91,7 @@ class ComparadorDeNos implements Comparator<MyNode> {
 public class CustomGlobal extends AbstractCustomGlobal {
 	ArrayList<MyNode> myNodes;
 	Logging myLog = Logging.getLogger("logxxx.txt");
-	private final double raio = 900.0;
+	private final double raio = 20.0;
 	Color[] cores;
 
 	/*
@@ -236,7 +236,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		 * esse loop é respnsavel por identificar quantos nos vai ter e em
 		 * seguinda realiza o teste de posicao de cada um
 		 */
-		for (int id = 0; id < 30; id++) {
+		for (int id = 0; id < 100; id++) {
 			newNode = new MyNode();
 			/**
 			 * Determina aleatoriamente as posições o +10 é para nao adicionar
@@ -341,7 +341,14 @@ public class CustomGlobal extends AbstractCustomGlobal {
 					System.out.println();
 					System.out.print(String.format("%10s", "COR: "));
 					System.out.print(String.format("%-10s", nodeTwo.getColor().getRGB() * (-1)));
-
+					System.out.println();
+					System.out.print(String.format("%-5s", "POSICAO X: "));
+					System.out.print(String.format("%-5s", nodeTwo.getPosition().xCoord));
+					System.out.println();
+					System.out.print(String.format("%-5s", "POSICAO Y: "));
+					System.out.print(String.format("%-5s", nodeTwo.getPosition().yCoord));
+					
+					
 					System.out.println();
 					break;
 				}
@@ -372,6 +379,12 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			System.out.println();
 			System.out.print(String.format("%-5s", "COR: "));
 			System.out.print(String.format("%-10s", myNodes.get(i).getColor().getRGB() * (-1)));
+			System.out.println();
+			System.out.print(String.format("%-5s", "POSICAO X: "));
+			System.out.print(String.format("%-5s", myNodes.get(i).getPosition().xCoord));
+			System.out.println();
+			System.out.print(String.format("%-5s", "POSICAO Y: "));
+			System.out.print(String.format("%-5s", myNodes.get(i).getPosition().yCoord));
 			System.out.println();
 			// System.out.println("ID: " + mn.get(i).ID + " Cor: " +
 			// (mn.get(i).getColor().getRGB()* (-1)));
