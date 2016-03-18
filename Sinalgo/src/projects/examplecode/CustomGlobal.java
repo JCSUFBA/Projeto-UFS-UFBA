@@ -91,7 +91,7 @@ class ComparadorDeNos implements Comparator<MyNode> {
 public class CustomGlobal extends AbstractCustomGlobal {
 	ArrayList<MyNode> myNodes;
 	Logging myLog = Logging.getLogger("logxxx.txt");
-	private final double raio = 1.0;
+	private final double raio = 900.0;
 	Color[] cores;
 
 	/*
@@ -503,35 +503,36 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 */
 
 	private void pintarNoAtual(int corSelecionada, MyNode node) {
+		boolean existe = true;
 		/**
 		 * testa para saber se esse no atual ja esta pintado
 		 */
 		if (!node.isColored()) {
-			/**
-			 * testa ver se tem algum vizinho com a cor que foi selecionada para
-			 * pintar o no atual
-			 */
-			if (!conflitoCores(node, corSelecionada)) {
+			
+			while (existe) {
+
 				/**
-				 * pinta o no atual
+				 * testa ver se tem algum vizinho com a cor que foi selecionada para
+				 * pintar o no atual
 				 */
-				node.setColor(cores[corSelecionada]);
-				/**
-				 * informa que o no já foi pintado
-				 */
-				node.setColored(true);
-				// /**
-				// * adiciona ao vetor de cores o id da cor pintada
-				// * #desnecessario#
-				// */
-				//
-				// cores[corSelecionada].setId(node.ID);
-				// /**
-				// * informa que a cor já foi usada
-				// * #desnecessario#
-				// */
-				//
-				// cores[corSelecionada].setUsada(true);
+				existe = conflitoCores(node, corSelecionada);
+
+				if (!existe) {
+					/**
+					 * pinta o no atual
+					 */
+					node.setColor(cores[corSelecionada]);
+					/**
+					 * informa que o no já foi pintado
+					 */
+					node.setColored(true);
+					
+					
+					break;
+				}
+
+				corSelecionada = randomDeCores();
+				
 			}
 		}
 	}
