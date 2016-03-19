@@ -91,7 +91,7 @@ class ComparadorDeNos implements Comparator<MyNode> {
 public class CustomGlobal extends AbstractCustomGlobal {
 	ArrayList<MyNode> myNodes;
 	Logging myLog = Logging.getLogger("logxxx.txt");
-	private final double raio = 900.0;
+	private final double raio = 100.0;
 	Color[] cores;
 
 	/*
@@ -525,8 +525,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 					/**
 					 * informa que o no já foi pintado
 					 */
-					node.setColored(true);
-					
+					node.setColored(true);				
 					
 					break;
 				}
@@ -574,6 +573,10 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			cores[i] = cor;
 
 		}
+		
+		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas: "));
+		System.out.print(String.format("%-5s", cores.length));
+		System.out.println();
 
 	}
 
