@@ -72,11 +72,7 @@ public class MyNode extends Node {
 		this.isColored = isColored;
 	}
 
-	
-
-	
-
-	
+		
 	
 	public HashMap<Integer, Double> getVizinhos() {
 		return vizinhos;
