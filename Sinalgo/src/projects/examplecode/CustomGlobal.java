@@ -574,7 +574,9 @@ private final double raio = 100.0;
 		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas: "));
 		System.out.print(String.format("%-5s", cores.length));
 		System.out.println();
-
+		System.out.print(String.format("%-5s", "Quantidade de Nos na rede: "));
+		System.out.print(String.format("%-5s", myNodes.size()));
+		System.out.println();
 	}
 
 	public void preRound() {
