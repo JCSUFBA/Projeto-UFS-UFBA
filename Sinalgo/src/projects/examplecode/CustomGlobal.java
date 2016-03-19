@@ -494,6 +494,33 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		 */
 		return false;
 	}
+	/**
+	 * realiza o teste de validação de cada vizinho, ou seja, ele testa todos os
+	 * viziho e o no de atual desse vizinho para saber se tem algum com a mesma
+	 * com que foi gerada
+	 * 
+	 * @param node
+	 * @param corSelecionada
+	 * @return
+	 */
+	private boolean conflitoCoresNoAtual(MyNode node, int corSelecionada) {
+		/**
+		 * pega todos os vizinhos do no atual
+		 */
+		for (int vizinho : node.getVizinhos().keySet()) {
+			/**
+			 * realiza o teste para saber se tem algum vizinho com a cor que foi
+			 * sorteada se tiver alguma cor igual retorna true
+			 */
+			if (myNodes.get(vizinho).getColor().getRGB() == cores[corSelecionada].getRGB()) {
+				return true;
+			}
+		}
+		/**
+		 * caso não tenha nenhum no com cor igual a atual ele retorna false
+		 */
+		return false;
+	}
 
 	/**
 	 * realiza a pintura do no atual
@@ -515,7 +542,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 				 * testa ver se tem algum vizinho com a cor que foi selecionada para
 				 * pintar o no atual
 				 */
-				existe = conflitoCores(node, corSelecionada);
+				existe = conflitoCoresNoAtual(node, corSelecionada);
 
 				if (!existe) {
 					/**
