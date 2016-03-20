@@ -97,6 +97,7 @@ private final double raio = 100.0;
 
 
 	Color[] cores;
+	int[] coresNumber;
 
 	/*
 	 * (non-Javadoc)
@@ -147,8 +148,8 @@ private final double raio = 100.0;
 
 	}
 
-	private HashMap<Integer, Double> retornaListaDistancias(int vertice) {
-		HashMap<Integer, Double> vizinhos = new HashMap<Integer, Double>();
+	private ArrayList<Integer> retornaListaDistancias(int vertice) {
+		ArrayList<Integer> vizinhos = new ArrayList<>();
 
 		// Analisa-se todos os vértices, exceto o vértice passado como parâmetro
 		for (MyNode node : myNodes) {
@@ -163,7 +164,7 @@ private final double raio = 100.0;
 				// Se estiver dentro do alcance do sensor, então é vizinho de um
 				// salto
 				if (distancia <= raio) {
-					vizinhos.put(node.ID, distancia);
+					vizinhos.add(node.ID);
 				}
 			}
 
@@ -245,6 +246,8 @@ private final double raio = 100.0;
 		 */
 		cores = (myNodes.get(0).getVizinhos().size() > 0) ? new Color[myNodes.get(0).getVizinhos().size() * 4]
 				: new Color[1];
+		coresNumber = (myNodes.get(0).getVizinhos().size() > 0) ? new int[myNodes.get(0).getVizinhos().size() * 4]
+				: new int[1 * 4];
 		/**
 		 * metodo responsavel por realizar a adição de todas as cores no vetor
 		 */
@@ -276,7 +279,7 @@ private final double raio = 100.0;
 	 */
 	private void imprimirVizinho(MyNode node) {
 
-		for (int vizinho : node.getVizinhos().keySet()) {
+		for (int vizinho : node.getVizinhos()) {
 
 			System.out.print(String.format("%-50s", "_____________________________________________"));
 			System.out.println();
@@ -287,14 +290,17 @@ private final double raio = 100.0;
 					System.out.print(String.format("%10s", "ID: "));
 					System.out.print(String.format("%-5s", vizinho));
 					System.out.println();
+					// System.out.print(String.format("%10s", "COR: "));
+					// System.out.print(String.format("%-10s",
+					// nodeTwo.getColor().toString().replace("java.awt.Color",
+					// "")));
+					// System.out.println();
+				//	System.out.print(String.format("%10s", "OU"));
+				//	System.out.println();
 					System.out.print(String.format("%10s", "COR: "));
-					System.out
-							.print(String.format("%-10s", nodeTwo.getColor().toString().replace("java.awt.Color", "")));
-					System.out.println();
-					System.out.print(String.format("%10s", "OU"));
-					System.out.println();
-					System.out.print(String.format("%10s", "COR: "));
-					System.out.print(String.format("%-10s", nodeTwo.getColor().getRGB() * (-1)));
+					// System.out.print(String.format("%-10s",
+					// nodeTwo.getColor().getRGB() * (-1)));
+					System.out.print(String.format("%-10s", nodeTwo.getCor()));
 					System.out.println();
 					System.out.print(String.format("%-5s", "POSICAO X: "));
 					System.out.print(String.format("%-5s", nodeTwo.getPosition().xCoord));
@@ -327,16 +333,19 @@ private final double raio = 100.0;
 			System.out.println();
 			System.out.print(String.format("%-5s", "ID: "));
 			System.out.print(String.format("%-5s", myNodes.get(i).ID));
-			System.out.println();
-			System.out.print(String.format("%-5s", "COR: "));
+			// System.out.println();
+			// System.out.print(String.format("%-5s", "COR: "));
 
-			System.out
-					.print(String.format("%-10s", myNodes.get(i).getColor().toString().replace("java.awt.Color", "")));
-			System.out.println();
-			System.out.print(String.format("%-5s", "OU"));
+			// System.out.print(String.format("%-10s",
+			// myNodes.get(i).getColor().toString().replace("java.awt.Color",
+			// "")));
+			//System.out.println();
+			//System.out.print(String.format("%-5s", "OU"));
 			System.out.println();
 			System.out.print(String.format("%-5s", "COR: "));
-			System.out.print(String.format("%-10s", myNodes.get(i).getColor().getRGB() * (-1)));
+			// System.out.print(String.format("%-10s",
+			// myNodes.get(i).getColor().getRGB() * (-1)));
+			System.out.print(String.format("%-10s", myNodes.get(i).getCor()));
 			System.out.println();
 			System.out.print(String.format("%-5s", "POSICAO X: "));
 			System.out.print(String.format("%-5s", myNodes.get(i).getPosition().xCoord));
@@ -387,7 +396,7 @@ private final double raio = 100.0;
 	}
 
 	private void PintarVizinhoNew(MyNode node, int corSelecionada) {
-
+		int posicaoVizinho = -1;
 		/**
 		 * atributo que serve de teste para saber se tem alguma cor igual
 		 */
@@ -395,7 +404,7 @@ private final double raio = 100.0;
 		/**
 		 * for responsavel por varrer todos os vizinhos de cada no
 		 */
-		for (int vizinho : node.getVizinhos().keySet()) {
+		for (int vizinho : node.getVizinhos()) {
 			/**
 			 * atributo passado por parametro que serve de ponteiro para
 			 * recuperar a cor
@@ -417,7 +426,7 @@ private final double raio = 100.0;
 				 * igual a alguma cor que já tenha em algum no. Se não tiver
 				 * nenhuma cor igual a cor selecionada ele retorna false
 				 */
-				corIgual = conflitoCores(node, corSelecionada);
+				corIgual = conflitoCoresNumber(node, corSelecionada);
 				/**
 				 * realiza o teste se essa cor não tem conflito com alguma cor já
 				 * inserida nos vizinhos
@@ -426,34 +435,24 @@ private final double raio = 100.0;
 					/**
 					 * realiza o processo de coloração dos vizinhos
 					 */
-					for (MyNode nodeTwo : myNodes) {
-
-						if (nodeTwo.ID == vizinho) {
+					posicaoVizinho = AcharId(vizinho);
+					/**
+					 * testa se o no vizinho atual está pitado caso não esteja
+					 * ele realiza a pintura
+					 */
+					if (posicaoVizinho >= 0) {
+						if (!myNodes.get(posicaoVizinho).isColored()) {
 							/**
-							 * testa se o no vizinho atual está colorido; caso não
-							 * esteja ele realiza a coloração
+							 * adiciona a cor ao no
 							 */
-							if (!nodeTwo.isColored()) {
-								/**
-								 * adiciona a cor ao no
-								 */
-								nodeTwo.setColor(cores[corSelecionada]);
-								/**
-								 * informa que o no já esta colorido
-								 */
-								nodeTwo.setColored(true);
-								
-								/**
-								 * sai do while e vai para o proximo vizinho
-								 */
-								corIgual = false;
-								break;
-							}
-
+							// nodeTwo.setColor(cores[corSelecionada]);
+							myNodes.get(posicaoVizinho).setCor(coresNumber[corSelecionada]);
+							/**
+							 * informa que o no já esta colorido
+							 */
+							myNodes.get(posicaoVizinho).setColored(true);
 						}
-
 					}
-
 				}
 
 				/**
@@ -476,11 +475,12 @@ private final double raio = 100.0;
 	 * @param corSelecionada
 	 * @return
 	 */
+	@Deprecated
 	private boolean conflitoCores(MyNode node, int corSelecionada) {
 		/**
 		 * pega todos os vizinhos do no atual
 		 */
-		for (int vizinho : node.getVizinhos().keySet()) {
+		for (int vizinho : node.getVizinhos()) {
 			/**
 			 * realiza o teste para saber se tem algum vizinho com a cor 
 			 * escolhida; se tiver alguma cor igual retorna true
@@ -496,6 +496,99 @@ private final double raio = 100.0;
 		return false;
 	}
 
+	private boolean conflitoCoresNumber(MyNode node, int corSelecionada) {
+		int posicaoNode = -1;
+
+		/**
+		 * pega todos os vizinhos do no atual
+		 */
+		for (int vizinho : node.getVizinhos()) {
+			/**
+			 * realiza o teste para saber se tem algum vizinho com a cor que foi
+			 * sorteada se tiver alguma cor igual retorna true
+			 */
+			posicaoNode = AcharId(vizinho);
+			if (posicaoNode >= 0) {
+
+				if (coresNumber[corSelecionada] == node.getCor()
+						| myNodes.get(posicaoNode).getCor() == coresNumber[corSelecionada]) {
+					return true;
+				}
+
+			}
+		}
+		/**
+		 * caso não tenha nenhum no com cor igual a atual ele retorna false
+		 */
+		return false;
+	}
+
+	/**
+	 * realiza o teste de validação de cada vizinho, ou seja, ele testa todos os
+	 * viziho e o no de atual desse vizinho para saber se tem algum com a mesma
+	 * com que foi gerada
+	 * 
+	 * @param node
+	 * @param corSelecionada
+	 * @return
+	 */
+	@Deprecated
+	private boolean conflitoCoresNoAtual(MyNode node, int corSelecionada) {
+		/**
+		 * pega todos os vizinhos do no atual
+		 */
+		for (int vizinho : node.getVizinhos()) {
+			/**
+			 * realiza o teste para saber se tem algum vizinho com a cor que foi
+			 * sorteada se tiver alguma cor igual retorna true
+			 */
+			if (myNodes.get(vizinho).getColor().getRGB() == cores[corSelecionada].getRGB()) {
+				return true;
+			}
+		}
+		/**
+		 * caso não tenha nenhum no com cor igual a atual ele retorna false
+		 */
+		return false;
+	}
+
+	private boolean conflitoCoresNoAtualInteiro(MyNode node, int corSelecionada) {
+		int posicaoNode = -1;
+
+		/**
+		 * pega todos os vizinhos do no atual
+		 */
+		for (int vizinho : node.getVizinhos()) {
+			/**
+			 * realiza o teste para saber se tem algum vizinho com a cor que foi
+			 * sorteada se tiver alguma cor igual retorna true
+			 */
+
+			posicaoNode = AcharId(vizinho);
+
+			if (posicaoNode >= 0) {
+				if (myNodes.get(posicaoNode).getCor() == coresNumber[corSelecionada]) {
+					return true;
+				}
+			}
+		}
+		/**
+		 * caso não tenha nenhum no com cor igual a atual ele retorna false
+		 */
+		return false;
+	}
+
+	private int AcharId(int idVizinho) {
+
+		for (int i = 0; i < myNodes.size(); i++) {
+			if (myNodes.get(i).ID == idVizinho) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 	/**
 	 * realiza a coloração do no atual
 	 * 
@@ -509,30 +602,31 @@ private final double raio = 100.0;
 		 * testa para saber se esse nó atual ja esta colorido
 		 */
 		if (!node.isColored()) {
-			
+
 			while (existe) {
 
 				/**
 				 * teste para ver se tem algum vizinho com a cor que foi selecionada para
 				 * colorir o no atual
 				 */
-				existe = conflitoCores(node, corSelecionada);
+				existe = conflitoCoresNoAtualInteiro(node, corSelecionada);
 
 				if (!existe) {
 					/**
 					 * colori o no atual
 					 */
-					node.setColor(cores[corSelecionada]);
+					// node.setColor(cores[corSelecionada]);
+					node.setCor(coresNumber[corSelecionada]);
 					/**
 					 * informa que o no já foi colorido
 					 */
-					node.setColored(true);				
-					
+					node.setColored(true);
+
 					break;
 				}
 
 				corSelecionada = randomDeCores();
-				
+
 			}
 		}
 	}
@@ -544,7 +638,7 @@ private final double raio = 100.0;
 	 */
 	private int randomDeCores() {
 		Random aleatorio = new Random();
-		int posicao = aleatorio.nextInt(cores.length);
+		int posicao = aleatorio.nextInt(coresNumber.length);
 		return posicao;
 	}
 
@@ -564,16 +658,17 @@ private final double raio = 100.0;
 		/**
 		 * adiciona a cor em todas as posiçoes do vetor de cores
 		 */
-		for (int i = 0; i < cores.length; i++) {
+		for (int i = 0; i < coresNumber.length; i++) {
 
-			r = aleatorio.nextInt(256);
-			g = aleatorio.nextInt(256);
-			b = aleatorio.nextInt(256);
-			cor = new Color(r, g, b);
-
-			cores[i] = cor;
-
+			// r = aleatorio.nextInt(256);
+			// g = aleatorio.nextInt(256);
+			// b = aleatorio.nextInt(256);
+			// cor = new Color(r, g, b);
+			//
+			// cores[i] = cor;
+			coresNumber[i] = aleatorio.nextInt(1000);
 		}
+
 		System.out.println("#========== Dados de Entrada da Rede ==========#");
 		//System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas: "));
 		//System.out.print(String.format("%-5s", cores.length));
@@ -581,6 +676,11 @@ private final double raio = 100.0;
 		System.out.print(String.format("%-5s", "Quantidade de Nós na Rede: "));
 		System.out.print(String.format("%-5s", myNodes.size()));
 		System.out.println("\nRaio de Alcance: "+raio);
+
+		System.out.println();
+		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas: "));
+		System.out.print(String.format("%-5s", coresNumber.length));
+
 		System.out.println();
 	}
 
