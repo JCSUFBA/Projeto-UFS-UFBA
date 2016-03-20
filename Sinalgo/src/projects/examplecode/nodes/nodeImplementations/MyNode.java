@@ -57,14 +57,14 @@ public class MyNode extends Node {
 	Logging myLog = Logging.getLogger("logxxx.txt");
 	private ArrayList<Integer> vizinhos;
 	private boolean isColored;
-	private int cor;
+	
 	
 	
 	public MyNode() {
 	
 		this.isColored = false;
 		this.vizinhos = new ArrayList<>();
-		this.cor = -1;
+	
 	}
 	
 	public boolean isColored() {
@@ -77,13 +77,6 @@ public class MyNode extends Node {
 
 		
 	
-	public int getCor() {
-		return cor;
-	}
-
-	public void setCor(int cor) {
-		this.cor = cor;
-	}
 
 	
 

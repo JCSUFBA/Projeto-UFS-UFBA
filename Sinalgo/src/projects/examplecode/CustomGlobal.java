@@ -39,15 +39,8 @@ package projects.examplecode;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.PriorityQueue;
 import java.util.Random;
-
 import javax.swing.JOptionPane;
-import javax.tools.Tool;
-
-import com.sun.tracing.dtrace.ArgsAttributes;
-
 import projects.examplecode.nodes.nodeImplementations.MyNode;
 import sinalgo.runtime.AbstractCustomGlobal;
 import sinalgo.tools.Tools;
@@ -91,13 +84,11 @@ class ComparadorDeNos implements Comparator<MyNode> {
 public class CustomGlobal extends AbstractCustomGlobal {
 	ArrayList<MyNode> myNodes;
 	Logging myLog = Logging.getLogger("logxxx.txt");
-	
-//define o meu raio de alcance
-private final double raio = 100.0;
 
+	// define o meu raio de alcance
+	private final double raio = 100.0;
 
 	Color[] cores;
-	int[] coresNumber;
 
 	/*
 	 * (non-Javadoc)
@@ -133,15 +124,15 @@ private final double raio = 100.0;
 	}
 
 	private void determinaPrioridade() {
-		
+
 		// Obtém a lista das distâncias dos vizinhos de um salto de cada vértice
 		for (MyNode node : myNodes) {
 			node.setVizinhos(retornaListaDistancias(node.ID));
 
 		}
 		/**
-		 * Calcular a prioridade de cada vértice ou seja ele ordena o vetor
-		 * pela quantidade de vizinhos de um salto (sort)
+		 * Calcular a prioridade de cada vértice ou seja ele ordena o vetor pela
+		 * quantidade de vizinhos de um salto (sort)
 		 */
 
 		myNodes.sort(new ComparadorDeNos());
@@ -154,7 +145,7 @@ private final double raio = 100.0;
 		// Analisa-se todos os vértices, exceto o vértice passado como parâmetro
 		for (MyNode node : myNodes) {
 			if (node.ID != myNodes.get(vertice).ID) {
-				
+
 				// Cálculo da Distância Euclidiana
 
 				double distancia = Math
@@ -193,21 +184,22 @@ private final double raio = 100.0;
 		 */
 		Tools.removeAllNodes();
 		/**
-		 * esse loop é responsavel por identificar quantos nós terão na execução e em
-		 * seguinda realiza o teste de posicao de cada um dos nós
+		 * esse loop é responsavel por identificar quantos nós terão na execução
+		 * e em seguinda realiza o teste de posicao de cada um dos nós
 		 */
 		for (int id = 0; id < 30; id++) {
 			newNode = new MyNode();
-			
+
 			/**
-			 * Determina aleatoriamente as posições x, y. O +10 é para nao adicionar
-			 * nenhum no na borda da area
+			 * Determina aleatoriamente as posições x, y. O +10 é para nao
+			 * adicionar nenhum no na borda da area
 			 */
 
 			double posicaoX = (random.nextDouble() * ladoArea) + 10;
 			double posicaoY = (random.nextDouble() * ladoArea) + 10;
 
-			// Determina um posição única no plano, ou seja, para não haver dois nó na mesma posição
+			// Determina um posição única no plano, ou seja, para não haver dois
+			// nó na mesma posição
 			boolean achou = false;
 			while (!achou) {
 				// Procura por vértices que estejam nas mesmas posições
@@ -217,7 +209,8 @@ private final double raio = 100.0;
 						achou = true;
 				}
 
-				// Se achar, determina uma nova rodada de nós randomicamente e analisar novamente
+				// Se achar, determina uma nova rodada de nós randomicamente e
+				// analisar novamente
 				if (achou) {
 					posicaoX = (random.nextDouble() * ladoArea) + 10;
 					posicaoY = (random.nextDouble() * ladoArea) + 10;
@@ -225,10 +218,10 @@ private final double raio = 100.0;
 				} else
 					achou = true;
 			}
-			
+
 			newNode.setPosition(posicaoX, posicaoY, 0);
 			newNode.ID = id;
-			
+
 			// Cria um vértice e adiciona-o na lista
 
 			newNode.finishInitializationWithDefaultModels(true);
@@ -236,18 +229,17 @@ private final double raio = 100.0;
 
 		}
 		/**
-		 * metodo responsavel por ordenar e determinar que a prioridade é do 
-		 * no que tem a maior quantidade de vizinhos
+		 * metodo responsavel por ordenar e determinar que a prioridade é do no
+		 * que tem a maior quantidade de vizinhos
 		 */
 		determinaPrioridade();
 		/**
-		 * esse vetor é o (delta*4) ou seja, o vetor que tem o tamanho da quantidade
-		 * de vizinhos do no com a maior prioridade
+		 * esse vetor é o (delta*4) ou seja, o vetor que tem o tamanho da
+		 * quantidade de vizinhos do no com a maior prioridade
 		 */
 		cores = (myNodes.get(0).getVizinhos().size() > 0) ? new Color[myNodes.get(0).getVizinhos().size() * 4]
 				: new Color[1];
-		coresNumber = (myNodes.get(0).getVizinhos().size() > 0) ? new int[myNodes.get(0).getVizinhos().size() * 4]
-				: new int[1 * 4];
+
 		/**
 		 * metodo responsavel por realizar a adição de todas as cores no vetor
 		 */
@@ -290,17 +282,14 @@ private final double raio = 100.0;
 					System.out.print(String.format("%10s", "ID: "));
 					System.out.print(String.format("%-5s", vizinho));
 					System.out.println();
-					// System.out.print(String.format("%10s", "COR: "));
-					// System.out.print(String.format("%-10s",
-					// nodeTwo.getColor().toString().replace("java.awt.Color",
-					// "")));
-					// System.out.println();
-				//	System.out.print(String.format("%10s", "OU"));
-				//	System.out.println();
 					System.out.print(String.format("%10s", "COR: "));
-					// System.out.print(String.format("%-10s",
-					// nodeTwo.getColor().getRGB() * (-1)));
-					System.out.print(String.format("%-10s", nodeTwo.getCor()));
+					System.out
+							.print(String.format("%-10s", nodeTwo.getColor().toString().replace("java.awt.Color", "")));
+					System.out.println();
+					System.out.print(String.format("%10s", "OU"));
+					System.out.println();
+					System.out.print(String.format("%10s", "COR: "));
+					System.out.print(String.format("%-10s", nodeTwo.getColor().getRGB() * (-1)));
 					System.out.println();
 					System.out.print(String.format("%-5s", "POSICAO X: "));
 					System.out.print(String.format("%-5s", nodeTwo.getPosition().xCoord));
@@ -326,26 +315,23 @@ private final double raio = 100.0;
 		System.out.println();
 		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas para Colorir a Rede: "));
 		System.out.print(String.format("%-5s", cores.length));
-		
+
 		System.out.println("\n");
 		for (int i = 0; i < myNodes.size(); i++) {
 			System.out.print(String.format("%-10s", "NÓ ATUAL"));
 			System.out.println();
 			System.out.print(String.format("%-5s", "ID: "));
 			System.out.print(String.format("%-5s", myNodes.get(i).ID));
-			// System.out.println();
-			// System.out.print(String.format("%-5s", "COR: "));
-
-			// System.out.print(String.format("%-10s",
-			// myNodes.get(i).getColor().toString().replace("java.awt.Color",
-			// "")));
-			//System.out.println();
-			//System.out.print(String.format("%-5s", "OU"));
 			System.out.println();
 			System.out.print(String.format("%-5s", "COR: "));
-			// System.out.print(String.format("%-10s",
-			// myNodes.get(i).getColor().getRGB() * (-1)));
-			System.out.print(String.format("%-10s", myNodes.get(i).getCor()));
+
+			System.out
+					.print(String.format("%-10s", myNodes.get(i).getColor().toString().replace("java.awt.Color", "")));
+			System.out.println();
+			System.out.print(String.format("%-5s", "OU"));
+			System.out.println();
+			System.out.print(String.format("%-5s", "COR: "));
+			System.out.print(String.format("%-10s", myNodes.get(i).getColor().getRGB() * (-1)));
 			System.out.println();
 			System.out.print(String.format("%-5s", "POSICAO X: "));
 			System.out.print(String.format("%-5s", myNodes.get(i).getPosition().xCoord));
@@ -353,7 +339,6 @@ private final double raio = 100.0;
 			System.out.print(String.format("%-5s", "POSICAO Y: "));
 			System.out.print(String.format("%-5s", myNodes.get(i).getPosition().yCoord));
 			System.out.println();
-			
 
 			imprimirVizinho(myNodes.get(i));
 			System.out.print(String.format("%-50s", "============================================="));
@@ -428,8 +413,8 @@ private final double raio = 100.0;
 				 */
 				corIgual = conflitoCoresNumber(node, corSelecionada);
 				/**
-				 * realiza o teste se essa cor não tem conflito com alguma cor já
-				 * inserida nos vizinhos
+				 * realiza o teste se essa cor não tem conflito com alguma cor
+				 * já inserida nos vizinhos
 				 */
 				if (!corIgual) {
 					/**
@@ -446,7 +431,7 @@ private final double raio = 100.0;
 							 * adiciona a cor ao no
 							 */
 							// nodeTwo.setColor(cores[corSelecionada]);
-							myNodes.get(posicaoVizinho).setCor(coresNumber[corSelecionada]);
+							myNodes.get(posicaoVizinho).setColor(cores[corSelecionada]);
 							/**
 							 * informa que o no já esta colorido
 							 */
@@ -468,7 +453,8 @@ private final double raio = 100.0;
 
 	/**
 	 * realiza o teste de validação de cada vizinho, ou seja, ele testa todos os
-	 * vizinhos e o no atual desse vizinho para saber se tem algum nó com a mesma cor
+	 * vizinhos e o no atual desse vizinho para saber se tem algum nó com a
+	 * mesma cor
 	 * 
 	 * 
 	 * @param node
@@ -482,7 +468,7 @@ private final double raio = 100.0;
 		 */
 		for (int vizinho : node.getVizinhos()) {
 			/**
-			 * realiza o teste para saber se tem algum vizinho com a cor 
+			 * realiza o teste para saber se tem algum vizinho com a cor
 			 * escolhida; se tiver alguma cor igual retorna true
 			 */
 			if (cores[corSelecionada].getRGB() == node.getColor().getRGB()
@@ -510,8 +496,8 @@ private final double raio = 100.0;
 			posicaoNode = AcharId(vizinho);
 			if (posicaoNode >= 0) {
 
-				if (coresNumber[corSelecionada] == node.getCor()
-						| myNodes.get(posicaoNode).getCor() == coresNumber[corSelecionada]) {
+				if (cores[corSelecionada].getRGB() == node.getColor().getRGB()
+						| myNodes.get(posicaoNode).getColor().getRGB() == cores[corSelecionada].getRGB()) {
 					return true;
 				}
 
@@ -567,7 +553,7 @@ private final double raio = 100.0;
 			posicaoNode = AcharId(vizinho);
 
 			if (posicaoNode >= 0) {
-				if (myNodes.get(posicaoNode).getCor() == coresNumber[corSelecionada]) {
+				if (myNodes.get(posicaoNode).getColor().getRGB() == cores[corSelecionada].getRGB()) {
 					return true;
 				}
 			}
@@ -606,8 +592,8 @@ private final double raio = 100.0;
 			while (existe) {
 
 				/**
-				 * teste para ver se tem algum vizinho com a cor que foi selecionada para
-				 * colorir o no atual
+				 * teste para ver se tem algum vizinho com a cor que foi
+				 * selecionada para colorir o no atual
 				 */
 				existe = conflitoCoresNoAtualInteiro(node, corSelecionada);
 
@@ -616,7 +602,7 @@ private final double raio = 100.0;
 					 * colori o no atual
 					 */
 					// node.setColor(cores[corSelecionada]);
-					node.setCor(coresNumber[corSelecionada]);
+					node.setColor(cores[corSelecionada]);
 					/**
 					 * informa que o no já foi colorido
 					 */
@@ -638,7 +624,7 @@ private final double raio = 100.0;
 	 */
 	private int randomDeCores() {
 		Random aleatorio = new Random();
-		int posicao = aleatorio.nextInt(coresNumber.length);
+		int posicao = aleatorio.nextInt(cores.length);
 		return posicao;
 	}
 
@@ -658,28 +644,29 @@ private final double raio = 100.0;
 		/**
 		 * adiciona a cor em todas as posiçoes do vetor de cores
 		 */
-		for (int i = 0; i < coresNumber.length; i++) {
+		for (int i = 0; i < cores.length; i++) {
 
-			// r = aleatorio.nextInt(256);
-			// g = aleatorio.nextInt(256);
-			// b = aleatorio.nextInt(256);
-			// cor = new Color(r, g, b);
-			//
-			// cores[i] = cor;
-			coresNumber[i] = aleatorio.nextInt(1000);
+			r = aleatorio.nextInt(256);
+			g = aleatorio.nextInt(256);
+			b = aleatorio.nextInt(256);
+			cor = new Color(r, g, b);
+
+			cores[i] = cor;
+
 		}
 
 		System.out.println("#========== Dados de Entrada da Rede ==========#");
-		//System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas: "));
-		//System.out.print(String.format("%-5s", cores.length));
+		// System.out.print(String.format("%-5s", "Quantidade de Cores
+		// Utilizadas: "));
+		// System.out.print(String.format("%-5s", cores.length));
 		System.out.println();
 		System.out.print(String.format("%-5s", "Quantidade de Nós na Rede: "));
 		System.out.print(String.format("%-5s", myNodes.size()));
-		System.out.println("\nRaio de Alcance: "+raio);
+		System.out.println("\nRaio de Alcance: " + raio);
 
 		System.out.println();
 		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas: "));
-		System.out.print(String.format("%-5s", coresNumber.length));
+		System.out.print(String.format("%-5s", cores.length));
 
 		System.out.println();
 	}
