@@ -91,7 +91,8 @@ class ComparadorDeNos implements Comparator<MyNode> {
 public class CustomGlobal extends AbstractCustomGlobal {
 	ArrayList<MyNode> myNodes;
 	Logging myLog = Logging.getLogger("logxxx.txt");
-
+	
+//define o meu raio de alcance
 private final double raio = 100.0;
 
 
@@ -131,14 +132,15 @@ private final double raio = 100.0;
 	}
 
 	private void determinaPrioridade() {
-		// Obtém a lista de distâncias dos vizinhos de um salto de cada vértice
+		
+		// Obtém a lista das distâncias dos vizinhos de um salto de cada vértice
 		for (MyNode node : myNodes) {
 			node.setVizinhos(retornaListaDistancias(node.ID));
 
 		}
 		/**
-		 * Calcular a prioridade de cada vértice ou seja ele ordena o vertor
-		 * pela quantidade de vizinhos
+		 * Calcular a prioridade de cada vértice ou seja ele ordena o vetor
+		 * pela quantidade de vizinhos de um salto (sort)
 		 */
 
 		myNodes.sort(new ComparadorDeNos());
@@ -180,7 +182,7 @@ private final double raio = 100.0;
 		 */
 		double ladoArea = Tools.getGraphPanel().getHeight();
 		/**
-		 * faz a estancia da lista onde ira conter todos os nos
+		 * faz a instancia da lista onde ira conter todos os nos
 		 */
 		myNodes = new ArrayList<>();
 		MyNode newNode;
@@ -191,13 +193,13 @@ private final double raio = 100.0;
 		Tools.removeAllNodes();
 		/**
 		 * esse loop é responsavel por identificar quantos nós terão na execução e em
-		 * seguinda realiza o teste de posicao de cada um
+		 * seguinda realiza o teste de posicao de cada um dos nós
 		 */
-		for (int id = 0; id < 10; id++) {
+		for (int id = 0; id < 30; id++) {
 			newNode = new MyNode();
 			
 			/**
-			 * Determina aleatoriamente as posições. O +10 é para nao adicionar
+			 * Determina aleatoriamente as posições x, y. O +10 é para nao adicionar
 			 * nenhum no na borda da area
 			 */
 
@@ -214,7 +216,7 @@ private final double raio = 100.0;
 						achou = true;
 				}
 
-				// Se achar, determina uma nova rodada de nós randomicamente e analisa novamente
+				// Se achar, determina uma nova rodada de nós randomicamente e analisar novamente
 				if (achou) {
 					posicaoX = (random.nextDouble() * ladoArea) + 10;
 					posicaoY = (random.nextDouble() * ladoArea) + 10;
@@ -222,7 +224,7 @@ private final double raio = 100.0;
 				} else
 					achou = true;
 			}
-			// System.out.println(posicaoX + " - " + posicaoY);
+			
 			newNode.setPosition(posicaoX, posicaoY, 0);
 			newNode.ID = id;
 			
@@ -238,7 +240,7 @@ private final double raio = 100.0;
 		 */
 		determinaPrioridade();
 		/**
-		 * esse vetor é o (delta*4) ou seja, o vetor que tem o tamanho da quantide
+		 * esse vetor é o (delta*4) ou seja, o vetor que tem o tamanho da quantidade
 		 * de vizinhos do no com a maior prioridade
 		 */
 		cores = (myNodes.get(0).getVizinhos().size() > 0) ? new Color[myNodes.get(0).getVizinhos().size() * 4]
@@ -255,7 +257,7 @@ private final double raio = 100.0;
 		Tools.getGraphPanel().repaint();
 
 		/**
-		 * imprimo cada no com seus respsctivos vizinhos
+		 * imprimo cada no com seus respectivos vizinhos
 		 * ============================================= NÓ ATUAL ID: 14 COR:
 		 * [r=6,g=155,b=5] OU COR: 16344315
 		 * _____________________________________________ VIZINHO ID: 23 COR:
@@ -316,8 +318,10 @@ private final double raio = 100.0;
 
 		System.out.print(String.format("%-50s", "#================ RESULTADO ================#"));
 		System.out.println();
-		System.out.println("\nRaio de Alcance: "+raio);
-		System.out.println();
+		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas para Colorir a Rede: "));
+		System.out.print(String.format("%-5s", cores.length));
+		
+		System.out.println("\n");
 		for (int i = 0; i < myNodes.size(); i++) {
 			System.out.print(String.format("%-10s", "NÓ ATUAL"));
 			System.out.println();
@@ -349,7 +353,7 @@ private final double raio = 100.0;
 	}
 
 	/**
-	 * metodo responsavel por pintar os nos e seus vizinhos
+	 * metodo responsavel por colorir os nos e seus vizinhos
 	 */
 	private void determiarCor() {
 		/**
@@ -385,7 +389,7 @@ private final double raio = 100.0;
 	private void PintarVizinhoNew(MyNode node, int corSelecionada) {
 
 		/**
-		 * atributo serve de teste para saber se tem alguma cor igual
+		 * atributo que serve de teste para saber se tem alguma cor igual
 		 */
 		boolean corIgual = true;
 		/**
@@ -411,7 +415,7 @@ private final double raio = 100.0;
 				/**
 				 * realiza o teste para saber se a cor que foi recuperada é
 				 * igual a alguma cor que já tenha em algum no. Se não tiver
-				 * nenhuma cor igual a selecionada ele retorna false
+				 * nenhuma cor igual a cor selecionada ele retorna false
 				 */
 				corIgual = conflitoCores(node, corSelecionada);
 				/**
@@ -502,7 +506,7 @@ private final double raio = 100.0;
 	private void pintarNoAtual(int corSelecionada, MyNode node) {
 		boolean existe = true;
 		/**
-		 * testa para saber se esse nó atual ja esta pintado
+		 * testa para saber se esse nó atual ja esta colorido
 		 */
 		if (!node.isColored()) {
 			
@@ -545,7 +549,7 @@ private final double raio = 100.0;
 	}
 
 	/**
-	 * criar vetores de cores de delta * 4
+	 * criar vetores de cores de delta * 4 obs: não entendi
 	 * 
 	 * @param cores
 	 */
@@ -570,12 +574,13 @@ private final double raio = 100.0;
 			cores[i] = cor;
 
 		}
-		
-		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas: "));
-		System.out.print(String.format("%-5s", cores.length));
+		System.out.println("#========== Dados de Entrada da Rede ==========#");
+		//System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas: "));
+		//System.out.print(String.format("%-5s", cores.length));
 		System.out.println();
-		System.out.print(String.format("%-5s", "Quantidade de Nos na rede: "));
+		System.out.print(String.format("%-5s", "Quantidade de Nós na Rede: "));
 		System.out.print(String.format("%-5s", myNodes.size()));
+		System.out.println("\nRaio de Alcance: "+raio);
 		System.out.println();
 	}
 
