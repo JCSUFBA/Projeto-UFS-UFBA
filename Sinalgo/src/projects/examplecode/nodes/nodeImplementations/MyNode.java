@@ -39,6 +39,7 @@ package projects.examplecode.nodes.nodeImplementations;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import sinalgo.configuration.WrongConfigurationException;
 import sinalgo.gui.transformation.PositionTransformation;
@@ -54,14 +55,16 @@ import sinalgo.nodes.*;
 public class MyNode extends Node {
 
 	Logging myLog = Logging.getLogger("logxxx.txt");
-	private HashMap<Integer, Double> vizinhos;
+	private ArrayList<Integer> vizinhos;
 	private boolean isColored;
+	private int cor;
 	
 	
 	public MyNode() {
 	
 		this.isColored = false;
-		this.vizinhos = new HashMap<>();
+		this.vizinhos = new ArrayList<>();
+		this.cor = -1;
 	}
 	
 	public boolean isColored() {
@@ -78,11 +81,21 @@ public class MyNode extends Node {
 
 	
 	
-	public HashMap<Integer, Double> getVizinhos() {
+	public int getCor() {
+		return cor;
+	}
+
+	public void setCor(int cor) {
+		this.cor = cor;
+	}
+
+	
+
+	public ArrayList<Integer> getVizinhos() {
 		return vizinhos;
 	}
 
-	public void setVizinhos(HashMap<Integer, Double> vizinhos) {
+	public void setVizinhos(ArrayList<Integer> vizinhos) {
 		this.vizinhos = vizinhos;
 	}
 
