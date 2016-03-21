@@ -88,7 +88,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	// define o meu raio de alcance
 	private final double raio = 100.0;
 
-	Color[] cores;
+ArrayList<	Color> cores;
 
 	/**
 	 * (non-Javadoc)
@@ -228,11 +228,11 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 		// esse vetor é o (delta*4) ou seja, o vetor que tem o tamanho da
 		// quantidade de vizinhos do no com a maior prioridade
-		cores = (myNodes.get(0).getVizinhos().size() > 0) ? new Color[myNodes.get(0).getVizinhos().size() * 4]
-				: new Color[1];
-
+		//cores = (myNodes.get(0).getVizinhos().size() > 0) ? new Color[myNodes.get(0).getVizinhos().size() * 4]
+			//	: new Color[1];
+		int quantidadeCores = (myNodes.get(0).getVizinhos().size() > 0) ? myNodes.get(0).getVizinhos().size() * 4 : 1;	
 		// metodo responsavel por realizar a adição de todas as cores no vetor
-		CriarVetorDeCores();
+		CriarVetorDeCores(quantidadeCores);
 
 		// determina as cores de cada no
 		determiarCor();
@@ -308,7 +308,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		System.out.print(String.format("%-50s", "#================ RESULTADO ================#"));
 		System.out.println();
 		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas para Colorir a Rede: "));
-		System.out.print(String.format("%-5s", cores.length));
+		System.out.print(String.format("%-5s", cores.size()));
 		System.out.println("\n");
 		for (int i = 0; i < myNodes.size(); i++) {
 			System.out.print(String.format("%-10s", "NÓ ATUAL"));
@@ -406,7 +406,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 							// adiciona a cor ao no
 							// nodeTwo.setColor(cores[corSelecionada]);
-							myNodes.get(posicaoVizinho).setColor(cores[corSelecionada]);
+							myNodes.get(posicaoVizinho).setColor(cores.get(corSelecionada));
 
 							// informa que o no já esta colorido
 							myNodes.get(posicaoVizinho).setColored(true);
@@ -441,8 +441,8 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 			// realiza o teste para saber se tem algum vizinho com a cor
 			// escolhida; se tiver alguma cor igual retorna true
-			if (cores[corSelecionada].getRGB() == node.getColor().getRGB()
-					| myNodes.get(vizinho).getColor().getRGB() == cores[corSelecionada].getRGB()) {
+			if (cores.get(corSelecionada).getRGB() == node.getColor().getRGB()
+					| myNodes.get(vizinho).getColor().getRGB() == cores.get(corSelecionada).getRGB()) {
 				return true;
 			}
 		}
@@ -462,8 +462,8 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			posicaoNode = AcharId(vizinho);
 			if (posicaoNode >= 0) {
 
-				if (cores[corSelecionada].getRGB() == node.getColor().getRGB()
-						| myNodes.get(posicaoNode).getColor().getRGB() == cores[corSelecionada].getRGB()) {
+				if (cores.get(corSelecionada).getRGB() == node.getColor().getRGB()
+						| myNodes.get(posicaoNode).getColor().getRGB() == cores.get(corSelecionada).getRGB()) {
 					return true;
 				}
 
@@ -491,7 +491,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 			// realiza o teste para saber se tem algum vizinho com a cor que foi
 			// sorteada se tiver alguma cor igual retorna true
-			if (myNodes.get(vizinho).getColor().getRGB() == cores[corSelecionada].getRGB()) {
+			if (myNodes.get(vizinho).getColor().getRGB() == cores.get(corSelecionada).getRGB()) {
 				return true;
 			}
 		}
@@ -514,7 +514,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 				// realiza o teste para saber se tem algum vizinho com a cor que
 				// foi
 				// sorteada se tiver alguma cor igual retorna true
-				if (myNodes.get(posicaoNode).getColor().getRGB() == cores[corSelecionada].getRGB()) {
+				if (myNodes.get(posicaoNode).getColor().getRGB() == cores.get(corSelecionada).getRGB()) {
 					return true;
 				}
 			}
@@ -559,7 +559,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 					// colori o no atual
 					// node.setColor(cores[corSelecionada]);
-					node.setColor(cores[corSelecionada]);
+					node.setColor(cores.get(corSelecionada));
 
 					// informa que o no já foi colorido
 					node.setColored(true);
@@ -580,7 +580,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 */
 	private int randomDeCores() {
 		Random aleatorio = new Random();
-		int posicao = aleatorio.nextInt(cores.length);
+		int posicao = aleatorio.nextInt(cores.size());
 		return posicao;
 	}
 
@@ -589,8 +589,8 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 * 
 	 * @param cores
 	 */
-	private void CriarVetorDeCores() {
-
+	private void CriarVetorDeCores(int quantidadeCores) {
+cores = new ArrayList<Color>();
 		Random aleatorio = new Random();
 
 		int r;
@@ -599,14 +599,21 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		Color cor;
 
 		// adiciona a cor em todas as posiçoes do vetor de cores
-		for (int i = 0; i < cores.length; i++) {
-
+		for (int i = 0; i < quantidadeCores; i++) {
 			r = aleatorio.nextInt(256);
 			g = aleatorio.nextInt(256);
 			b = aleatorio.nextInt(256);
 			cor = new Color(r, g, b);
-
-			cores[i] = cor;
+			
+			// Determina uma cor única na lista, ou seja, para não haver duas cores repetidas
+			while (cores.contains(cor)) {
+				r = aleatorio.nextInt(256);
+				g = aleatorio.nextInt(256);
+				b = aleatorio.nextInt(256);
+				cor = new Color(r, g, b);
+			}
+			cores.add(cor);
+		
 
 		}
 
@@ -621,7 +628,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 		System.out.println();
 		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas: "));
-		System.out.print(String.format("%-5s", cores.length));
+		System.out.print(String.format("%-5s", cores.size()));
 
 		System.out.println();
 	}
