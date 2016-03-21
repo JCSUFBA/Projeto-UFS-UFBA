@@ -57,16 +57,12 @@ public class MyNode extends Node {
 	Logging myLog = Logging.getLogger("logxxx.txt");
 	private ArrayList<Integer> vizinhos;
 	private boolean isColored;
-	
-	
-	
+
 	public MyNode() {
-	
 		this.isColored = false;
 		this.vizinhos = new ArrayList<>();
-	
 	}
-	
+
 	public boolean isColored() {
 		return isColored;
 	}
@@ -74,11 +70,6 @@ public class MyNode extends Node {
 	public void setColored(boolean isColored) {
 		this.isColored = isColored;
 	}
-
-		
-	
-
-	
 
 	public ArrayList<Integer> getVizinhos() {
 		return vizinhos;
