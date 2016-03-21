@@ -282,12 +282,14 @@ public class CustomGlobal extends AbstractCustomGlobal {
 					System.out.print(String.format("%10s", "ID: "));
 					System.out.print(String.format("%-5s", vizinho));
 					System.out.println();
-					System.out.print(String.format("%10s", "COR: "));
-					System.out
-							.print(String.format("%-10s", nodeTwo.getColor().toString().replace("java.awt.Color", "")));
-					System.out.println();
-					System.out.print(String.format("%10s", "OU"));
-					System.out.println();
+					// System.out.print(String.format("%10s", "COR: "));
+					// System.out
+					// .print(String.format("%-10s",
+					// nodeTwo.getColor().toString().replace("java.awt.Color",
+					// "")));
+					// System.out.println();
+					// System.out.print(String.format("%10s", "OU"));
+					// System.out.println();
 					System.out.print(String.format("%10s", "COR: "));
 					System.out.print(String.format("%-10s", nodeTwo.getColor().getRGB() * (-1)));
 					System.out.println();
@@ -323,13 +325,15 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			System.out.print(String.format("%-5s", "ID: "));
 			System.out.print(String.format("%-5s", myNodes.get(i).ID));
 			System.out.println();
-			System.out.print(String.format("%-5s", "COR: "));
-
-			System.out
-					.print(String.format("%-10s", myNodes.get(i).getColor().toString().replace("java.awt.Color", "")));
-			System.out.println();
-			System.out.print(String.format("%-5s", "OU"));
-			System.out.println();
+			// System.out.print(String.format("%-5s", "COR: "));
+			//
+			// System.out
+			// .print(String.format("%-10s",
+			// myNodes.get(i).getColor().toString().replace("java.awt.Color",
+			// "")));
+			// System.out.println();
+			// System.out.print(String.format("%-5s", "OU"));
+			// System.out.println();
 			System.out.print(String.format("%-5s", "COR: "));
 			System.out.print(String.format("%-10s", myNodes.get(i).getColor().getRGB() * (-1)));
 			System.out.println();
@@ -405,7 +409,8 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			 * cor igual aos seus vizinhos ou até mesmo a seu no atual
 			 */
 			while (corIgual) {
-
+				
+				
 				/**
 				 * realiza o teste para saber se a cor que foi recuperada é
 				 * igual a alguma cor que já tenha em algum no. Se não tiver
@@ -590,7 +595,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		if (!node.isColored()) {
 
 			while (existe) {
-
+				System.out.println("Loop No atual");
 				/**
 				 * teste para ver se tem algum vizinho com a cor que foi
 				 * selecionada para colorir o no atual
