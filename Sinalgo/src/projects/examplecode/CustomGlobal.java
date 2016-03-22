@@ -391,7 +391,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 				// realiza o teste para saber se a cor que foi recuperada é
 				// igual a alguma cor que já tenha em algum no. Se não tiver
 				// nenhuma cor igual a cor selecionada ele retorna false
-				corIgual = conflitoCoresNumber(node, corSelecionada);
+				corIgual = conflitoVizinho(vizinho,corSelecionada,node);
 
 				// realiza o teste se essa cor não tem conflito com alguma cor
 				// já inserida nos vizinhos
@@ -454,23 +454,19 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	}
 
 	private boolean conflitoCoresNumber(MyNode node, int corSelecionada) {
-		//int posicaoNode = -1;
+		// int posicaoNode = -1;
 
 		// pega todos os vizinhos do no atual
 		for (int vizinho : node.getVizinhos()) {
 
 			// realiza o teste para saber se tem algum vizinho com a cor que foi
 			// sorteada se tiver alguma cor igual retorna true
-			//posicaoNode = AcharId(vizinho);
-			//if (posicaoNode >= 0) {
+			// posicaoNode = AcharId(vizinho);
+			// if (posicaoNode >= 0) {
 
-				if (cores.get(corSelecionada).getRGB() == node.getColor().getRGB()) {
-					return true;
-				} else {
-					return conflitoVizinho(vizinho, corSelecionada, node);
-				}
+			return conflitoVizinho(vizinho, corSelecionada, node);
 
-			//}
+			// }
 		}
 
 		// caso não tenha nenhum no com cor igual a atual ele retorna false
@@ -480,17 +476,16 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	private boolean conflitoVizinho(int noVizinho, int corSelecionada, MyNode noAtualAovizinhoOrigem) {
 		for (MyNode nodeAtual : myNodes) {
 
-			if (cores.get(corSelecionada).getRGB() == nodeAtual.getColor().getRGB() 
-					&& noVizinho != nodeAtual.ID
-					&& nodeAtual.ID != noAtualAovizinhoOrigem.ID) {
-
-				for (int vizinho : nodeAtual.getVizinhos()) {
-					{
-						if (vizinho == noVizinho) {
-							return true;
+			if (noVizinho != nodeAtual.ID) {
+				if (cores.get(corSelecionada).getRGB() == nodeAtual.getColor().getRGB()) {
+					for (int vizinho : nodeAtual.getVizinhos()) {
+						{
+							if (vizinho == noVizinho) {
+								return true;
+							}
 						}
-					}
 
+					}
 				}
 
 			}
