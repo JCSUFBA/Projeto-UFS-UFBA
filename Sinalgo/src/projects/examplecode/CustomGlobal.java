@@ -37,6 +37,10 @@
 package projects.examplecode;
 
 import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
@@ -84,7 +88,7 @@ class ComparadorDeNos implements Comparator<MyNode> {
 public class CustomGlobal extends AbstractCustomGlobal {
 	ArrayList<MyNode> myNodes;
 	Logging myLog = Logging.getLogger("logxxx.txt");
-
+	String imprimir = String.format("%-50s", "#================ RESULTADO ================# \n");
 	// define o meu raio de alcance
 	private final double raio = 100.0;
 
@@ -182,7 +186,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 		// esse loop é responsavel por identificar quantos nós terão na execução
 		// e em seguinda realiza o teste de posicao de cada um dos nós
-		for (int id = 0; id < 60; id++) {
+		for (int id = 0; id < 10; id++) {
 			newNode = new MyNode();
 
 			// Determina aleatoriamente as posições x, y. O +10 é para nao
@@ -264,15 +268,14 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 		for (int vizinho : node.getVizinhos()) {
 
-			System.out.print(String.format("%-50s", "_____________________________________________"));
-			System.out.println();
-			System.out.print(String.format("%10s", "VIZINHO"));
-			System.out.println();
+			imprimir += String.format("%-50s", "_____________________________________________ \n");
+
+			imprimir += String.format("%10s", "VIZINHO \n");
+
 			for (MyNode nodeTwo : myNodes) {
 				if (vizinho == nodeTwo.ID) {
-					System.out.print(String.format("%10s", "ID: "));
-					System.out.print(String.format("%-5s", vizinho));
-					System.out.println();
+					imprimir += String.format("%10s", "ID: ");
+					imprimir += String.format("%-5s", vizinho) + "\n";
 
 					// System.out.print(String.format("%10s", "COR: "));
 					// System.out
@@ -283,16 +286,15 @@ public class CustomGlobal extends AbstractCustomGlobal {
 					// System.out.print(String.format("%10s", "OU"));
 					// System.out.println();
 
-					System.out.print(String.format("%10s", "COR: "));
-					System.out.print(String.format("%-10s", nodeTwo.getColor().getRGB() * (-1)));
-					System.out.println();
-					System.out.print(String.format("%-5s", "POSICAO X: "));
-					System.out.print(String.format("%-5s", nodeTwo.getPosition().xCoord));
-					System.out.println();
-					System.out.print(String.format("%-5s", "POSICAO Y: "));
-					System.out.print(String.format("%-5s", nodeTwo.getPosition().yCoord));
+					imprimir += String.format("%10s", "COR: ");
+					imprimir += String.format("%-10s", nodeTwo.getColor().getRGB() * (-1)) + "\n";
 
-					System.out.println();
+					imprimir += String.format("%-5s", "POSICAO X: ");
+					imprimir += String.format("%-5s", nodeTwo.getPosition().xCoord) + "\n";
+
+					imprimir += String.format("%-5s", "POSICAO Y: ");
+					imprimir += String.format("%-5s", nodeTwo.getPosition().yCoord) + "\n";
+
 					break;
 				}
 
@@ -306,17 +308,18 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 */
 	private void ImprimirNo() {
 
-		System.out.print(String.format("%-50s", "#================ RESULTADO ================#"));
-		System.out.println();
-		System.out.print(String.format("%-5s", "Quantidade de Cores Utilizadas para Colorir a Rede: "));
-		System.out.print(String.format("%-5s", cores.size()));
-		System.out.println("\n");
+		// System.out.print(String.format("%-50s", "#================ RESULTADO
+		// ================#"));
+		// System.out.println();
+		imprimir += String.format("%-5s", "Quantidade de Cores Utilizadas para Colorir a Rede: ");
+		imprimir += String.format("%-5s", cores.size()) + "\n";
+
 		for (int i = 0; i < myNodes.size(); i++) {
-			System.out.print(String.format("%-10s", "NÓ ATUAL"));
-			System.out.println();
-			System.out.print(String.format("%-5s", "ID: "));
-			System.out.print(String.format("%-5s", myNodes.get(i).ID));
-			System.out.println();
+			imprimir += String.format("%-10s", "NÓ ATUAL \n");
+
+			imprimir += String.format("%-5s", "ID: ");
+			imprimir += String.format("%-5s", myNodes.get(i).ID) + "\n";
+
 			// System.out.print(String.format("%-5s", "COR: "));
 			//
 			// System.out
@@ -326,19 +329,19 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			// System.out.println();
 			// System.out.print(String.format("%-5s", "OU"));
 			// System.out.println();
-			System.out.print(String.format("%-5s", "COR: "));
-			System.out.print(String.format("%-10s", myNodes.get(i).getColor().getRGB() * (-1)));
-			System.out.println();
-			System.out.print(String.format("%-5s", "POSICAO X: "));
-			System.out.print(String.format("%-5s", myNodes.get(i).getPosition().xCoord));
-			System.out.println();
-			System.out.print(String.format("%-5s", "POSICAO Y: "));
-			System.out.print(String.format("%-5s", myNodes.get(i).getPosition().yCoord));
-			System.out.println();
+			imprimir += String.format("%-5s", "COR: ");
+			imprimir += String.format("%-10s", myNodes.get(i).getColor().getRGB() * (-1)) + "\n";
+			imprimir += String.format("%-5s", "POSICAO X: ");
+			imprimir += String.format("%-5s", myNodes.get(i).getPosition().xCoord) + "\n";
+
+			imprimir += String.format("%-5s", "POSICAO Y: ");
+			imprimir += String.format("%-5s", myNodes.get(i).getPosition().yCoord) + "\n";
+
 			imprimirVizinho(myNodes.get(i));
-			System.out.print(String.format("%-50s", "============================================="));
-			System.out.println();
+			imprimir += String.format("%-50s", "============================================= \n");
+
 		}
+
 	}
 
 	/**
@@ -391,7 +394,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 				// realiza o teste para saber se a cor que foi recuperada é
 				// igual a alguma cor que já tenha em algum no. Se não tiver
 				// nenhuma cor igual a cor selecionada ele retorna false
-				corIgual = conflitoVizinho(vizinho,corSelecionada,node);
+				corIgual = conflitoVizinho(vizinho, corSelecionada, node);
 
 				// realiza o teste se essa cor não tem conflito com alguma cor
 				// já inserida nos vizinhos
@@ -453,6 +456,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		return false;
 	}
 
+	@Deprecated
 	private boolean conflitoCoresNumber(MyNode node, int corSelecionada) {
 		// int posicaoNode = -1;
 
@@ -661,9 +665,29 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	public void postRound() {
 	}
 
+	public void escrever() {
+
+		try {
+			File arquivo = new File("src/resultado.txt");
+			FileWriter fw = new FileWriter(arquivo);
+			BufferedWriter bw = new BufferedWriter(fw);
+
+			bw.write(imprimir);
+
+			bw.flush();
+			bw.close();
+			fw.close();
+		} catch (IOException e) {
+
+		}
+
+	}
+
 	public void onExit() {
-		System.out.println();
-		System.out.println("Fim");
+		imprimir += "Fim";
+		escrever();
+
+
 	}
 
 }
