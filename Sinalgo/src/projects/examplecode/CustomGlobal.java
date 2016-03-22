@@ -88,7 +88,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	// define o meu raio de alcance
 	private final double raio = 100.0;
 
-ArrayList<	Color> cores;
+	ArrayList<Color> cores;
 
 	/**
 	 * (non-Javadoc)
@@ -182,7 +182,7 @@ ArrayList<	Color> cores;
 
 		// esse loop é responsavel por identificar quantos nós terão na execução
 		// e em seguinda realiza o teste de posicao de cada um dos nós
-		for (int id = 0; id < 30; id++) {
+		for (int id = 0; id < 60; id++) {
 			newNode = new MyNode();
 
 			// Determina aleatoriamente as posições x, y. O +10 é para nao
@@ -212,7 +212,7 @@ ArrayList<	Color> cores;
 					achou = true;
 			}
 
-			//seta a posição para o no
+			// seta a posição para o no
 			newNode.setPosition(posicaoX, posicaoY, 0);
 			newNode.ID = id;
 
@@ -228,9 +228,10 @@ ArrayList<	Color> cores;
 
 		// esse vetor é o (delta*4) ou seja, o vetor que tem o tamanho da
 		// quantidade de vizinhos do no com a maior prioridade
-		//cores = (myNodes.get(0).getVizinhos().size() > 0) ? new Color[myNodes.get(0).getVizinhos().size() * 4]
-			//	: new Color[1];
-		int quantidadeCores = (myNodes.get(0).getVizinhos().size() > 0) ? myNodes.get(0).getVizinhos().size() * 4 : 1;	
+		// cores = (myNodes.get(0).getVizinhos().size() > 0) ? new
+		// Color[myNodes.get(0).getVizinhos().size() * 4]
+		// : new Color[1];
+		int quantidadeCores = (myNodes.get(0).getVizinhos().size() > 0) ? myNodes.get(0).getVizinhos().size() * 4 : 1;
 		// metodo responsavel por realizar a adição de todas as cores no vetor
 		CriarVetorDeCores(quantidadeCores);
 
@@ -272,7 +273,7 @@ ArrayList<	Color> cores;
 					System.out.print(String.format("%10s", "ID: "));
 					System.out.print(String.format("%-5s", vizinho));
 					System.out.println();
-					
+
 					// System.out.print(String.format("%10s", "COR: "));
 					// System.out
 					// .print(String.format("%-10s",
@@ -281,7 +282,7 @@ ArrayList<	Color> cores;
 					// System.out.println();
 					// System.out.print(String.format("%10s", "OU"));
 					// System.out.println();
-					
+
 					System.out.print(String.format("%10s", "COR: "));
 					System.out.print(String.format("%-10s", nodeTwo.getColor().getRGB() * (-1)));
 					System.out.println();
@@ -344,21 +345,21 @@ ArrayList<	Color> cores;
 	 * metodo responsavel por colorir os nos e seus vizinhos
 	 */
 	private void determiarCor() {
-		
+
 		// atributo o qual serve de posicao para recuperar a cor no array de
 		// cores
 		int corSelecionada;
-		
+
 		// loop varre cada no realizando a coloração atual e dos seus vizinhos
 		for (MyNode node : myNodes) {
-			
+
 			// atribuindo uma posicao aleatoria para recuperar uma cor do array
 			// de cores
 			corSelecionada = randomDeCores();
-			
+
 			// metodo responsavel por realizar a coloração do no atual "node"
 			pintarNoAtual(corSelecionada, node);
-			
+
 			// metodo responsavel por realizar a coloração dos vizinhos do no
 			// atual "node"
 			PintarVizinhoNew(node, corSelecionada);
@@ -410,6 +411,7 @@ ArrayList<	Color> cores;
 
 							// informa que o no já esta colorido
 							myNodes.get(posicaoVizinho).setColored(true);
+							break;
 						}
 					}
 				}
@@ -452,26 +454,51 @@ ArrayList<	Color> cores;
 	}
 
 	private boolean conflitoCoresNumber(MyNode node, int corSelecionada) {
-		int posicaoNode = -1;
+		//int posicaoNode = -1;
 
 		// pega todos os vizinhos do no atual
 		for (int vizinho : node.getVizinhos()) {
 
 			// realiza o teste para saber se tem algum vizinho com a cor que foi
 			// sorteada se tiver alguma cor igual retorna true
-			posicaoNode = AcharId(vizinho);
-			if (posicaoNode >= 0) {
+			//posicaoNode = AcharId(vizinho);
+			//if (posicaoNode >= 0) {
 
-				if (cores.get(corSelecionada).getRGB() == node.getColor().getRGB()
-						| myNodes.get(posicaoNode).getColor().getRGB() == cores.get(corSelecionada).getRGB()) {
+				if (cores.get(corSelecionada).getRGB() == node.getColor().getRGB()) {
 					return true;
+				} else {
+					return conflitoVizinho(vizinho, corSelecionada, node);
 				}
 
-			}
+			//}
 		}
 
 		// caso não tenha nenhum no com cor igual a atual ele retorna false
 		return false;
+	}
+
+	private boolean conflitoVizinho(int noVizinho, int corSelecionada, MyNode noAtualAovizinhoOrigem) {
+		for (MyNode nodeAtual : myNodes) {
+
+			if (cores.get(corSelecionada).getRGB() == nodeAtual.getColor().getRGB() 
+					&& noVizinho != nodeAtual.ID
+					&& nodeAtual.ID != noAtualAovizinhoOrigem.ID) {
+
+				for (int vizinho : nodeAtual.getVizinhos()) {
+					{
+						if (vizinho == noVizinho) {
+							return true;
+						}
+					}
+
+				}
+
+			}
+
+		}
+
+		return false;
+
 	}
 
 	/**
@@ -590,7 +617,7 @@ ArrayList<	Color> cores;
 	 * @param cores
 	 */
 	private void CriarVetorDeCores(int quantidadeCores) {
-cores = new ArrayList<Color>();
+		cores = new ArrayList<Color>();
 		Random aleatorio = new Random();
 
 		int r;
@@ -604,8 +631,9 @@ cores = new ArrayList<Color>();
 			g = aleatorio.nextInt(256);
 			b = aleatorio.nextInt(256);
 			cor = new Color(r, g, b);
-			
-			// Determina uma cor única na lista, ou seja, para não haver duas cores repetidas
+
+			// Determina uma cor única na lista, ou seja, para não haver duas
+			// cores repetidas
 			while (cores.contains(cor)) {
 				r = aleatorio.nextInt(256);
 				g = aleatorio.nextInt(256);
@@ -613,7 +641,6 @@ cores = new ArrayList<Color>();
 				cor = new Color(r, g, b);
 			}
 			cores.add(cor);
-		
 
 		}
 
