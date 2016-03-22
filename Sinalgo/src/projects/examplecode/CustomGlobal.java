@@ -341,6 +341,9 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			imprimir += String.format("%-50s", "============================================= \n");
 
 		}
+		imprimir += "Fim";
+		escrever();
+
 
 	}
 
@@ -684,9 +687,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	}
 
 	public void onExit() {
-		imprimir += "Fim";
-		escrever();
-
+		
 
 	}
 
