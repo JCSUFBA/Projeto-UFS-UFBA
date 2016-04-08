@@ -344,7 +344,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		imprimir += "Fim";
 		escrever();
 
-
 	}
 
 	/**
@@ -417,6 +416,9 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 							// informa que o no já esta colorido
 							myNodes.get(posicaoVizinho).setColored(true);
+							myNodes.get(posicaoVizinho).sendColorMessage(cores.get(corSelecionada),
+									myNodes.get(posicaoVizinho));
+
 							break;
 						}
 					}
@@ -441,44 +443,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 * @param corSelecionada
 	 * @return
 	 */
-	@Deprecated
-	private boolean conflitoCores(MyNode node, int corSelecionada) {
-
-		// pega todos os vizinhos do no atual
-		for (int vizinho : node.getVizinhos()) {
-
-			// realiza o teste para saber se tem algum vizinho com a cor
-			// escolhida; se tiver alguma cor igual retorna true
-			if (cores.get(corSelecionada).getRGB() == node.getColor().getRGB()
-					| myNodes.get(vizinho).getColor().getRGB() == cores.get(corSelecionada).getRGB()) {
-				return true;
-			}
-		}
-
-		// caso não tenha nenhum nó com cor igual a atual ele retorna false
-		return false;
-	}
-
-	@Deprecated
-	private boolean conflitoCoresNumber(MyNode node, int corSelecionada) {
-		// int posicaoNode = -1;
-
-		// pega todos os vizinhos do no atual
-		for (int vizinho : node.getVizinhos()) {
-
-			// realiza o teste para saber se tem algum vizinho com a cor que foi
-			// sorteada se tiver alguma cor igual retorna true
-			// posicaoNode = AcharId(vizinho);
-			// if (posicaoNode >= 0) {
-
-			return conflitoVizinho(vizinho, corSelecionada, node);
-
-			// }
-		}
-
-		// caso não tenha nenhum no com cor igual a atual ele retorna false
-		return false;
-	}
 
 	private boolean conflitoVizinho(int noVizinho, int corSelecionada, MyNode noAtualAovizinhoOrigem) {
 		for (MyNode nodeAtual : myNodes) {
@@ -512,22 +476,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 * @param corSelecionada
 	 * @return
 	 */
-	@Deprecated
-	private boolean conflitoCoresNoAtual(MyNode node, int corSelecionada) {
-
-		// pega todos os vizinhos do no atual
-		for (int vizinho : node.getVizinhos()) {
-
-			// realiza o teste para saber se tem algum vizinho com a cor que foi
-			// sorteada se tiver alguma cor igual retorna true
-			if (myNodes.get(vizinho).getColor().getRGB() == cores.get(corSelecionada).getRGB()) {
-				return true;
-			}
-		}
-
-		// caso não tenha nenhum no com cor igual a atual ele retorna false
-		return false;
-	}
 
 	private boolean conflitoCoresNoAtualInteiro(MyNode node, int corSelecionada) {
 		int posicaoNode = -1;
@@ -592,6 +540,8 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 					// informa que o no já foi colorido
 					node.setColored(true);
+
+					node.sendColorMessage(cores.get(corSelecionada), node);
 
 					break;
 				}
@@ -687,7 +637,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	}
 
 	public void onExit() {
-		
 
 	}
 

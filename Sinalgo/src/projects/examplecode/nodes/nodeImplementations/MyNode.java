@@ -41,11 +41,15 @@ import java.awt.Graphics;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import projects.defaultProject.nodes.timers.MessageTimer;
+import projects.sample4.nodes.messages.S4Message;
 import sinalgo.configuration.WrongConfigurationException;
 import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.io.eps.EPSOutputPrintStream;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.nodes.messages.Message;
+import sinalgo.tools.Tools;
 import sinalgo.tools.logging.Logging;
 import sinalgo.nodes.*;
 
@@ -154,4 +158,37 @@ public class MyNode extends Node {
 		drawToPostScriptAsDisk(pw, pt, drawingSizeInPixels / 2, getColor());
 	}
 
+	
+	
+	/**
+	 * Sends a message to (a neighbor | all neighbors) with the specified color as message content.
+	 * @param c The color to write in the message.
+	 * @param to Receiver node, or null, if all neighbors should receive the message.
+	 */
+	public void sendColorMessage(Color c, Node to) {
+		S4Message msg = new S4Message();
+		msg.color = c;
+		if(Tools.isSimulationInAsynchroneMode()) {
+			// sending the messages directly is OK in async mode
+			if(to != null) {
+				send(msg, to);
+			} else {
+				broadcast(msg);
+			}
+		} else {
+			// In Synchronous mode, a node is only allowed to send messages during the 
+			// execution of its step. We can easily schedule to send this message during the
+			// next step by setting a timer. The MessageTimer from the default project already
+			// implements the desired functionality.
+			MessageTimer t;
+			if(to != null) {
+				t = new MessageTimer(msg, to); // unicast
+			} else {
+				t = new MessageTimer(msg); // multicast
+			}
+			t.startRelative(Tools.getRandomNumberGenerator().nextDouble(), this);
+		}
+	}
+	
+	
 }
