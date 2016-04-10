@@ -61,10 +61,34 @@ public class MyNode extends Node {
 	Logging myLog = Logging.getLogger("logxxx.txt");
 	private ArrayList<Integer> vizinhos;
 	private boolean isColored;
+	Message[] mensage;
+	int posicaoAtual;
 
 	public MyNode() {
 		this.isColored = false;
 		this.vizinhos = new ArrayList<>();
+		this.posicaoAtual = 0;
+	}
+
+	public Message[] getMensageAll() {
+		return mensage;
+	}
+
+	public void setMensage(Message[] mensage) {
+		this.mensage = mensage;
+	}
+
+	public int getPosicaoAtual() {
+		return posicaoAtual;
+	}
+
+	public void setPosicaoAtual() {
+		if (this.posicaoAtual < this.mensage.length)
+			this.posicaoAtual++;
+	}
+
+	public void setTamanho(int tamanho) {
+		this.mensage = new Message[tamanho];
 	}
 
 	public boolean isColored() {
@@ -158,37 +182,34 @@ public class MyNode extends Node {
 		drawToPostScriptAsDisk(pw, pt, drawingSizeInPixels / 2, getColor());
 	}
 
-	
-	
 	/**
-	 * Sends a message to (a neighbor | all neighbors) with the specified color as message content.
-	 * @param c The color to write in the message.
-	 * @param to Receiver node, or null, if all neighbors should receive the message.
+	 * Sends a message to (a neighbor | all neighbors) with the specified color
+	 * as message content.
+	 * 
+	 * @param c
+	 *            The color to write in the message.
+	 * @param to
+	 *            Receiver node, or null, if all neighbors should receive the
+	 *            message.
 	 */
 	public void sendColorMessage(Color c, Node to) {
-		S4Message msg = new S4Message();
-		msg.color = c;
-		if(Tools.isSimulationInAsynchroneMode()) {
-			// sending the messages directly is OK in async mode
-			if(to != null) {
-				send(msg, to);
-			} else {
-				broadcast(msg);
+		
+		if (this.posicaoAtual < this.mensage.length){
+		Message m = new Message() {
+
+			@Override
+			public Message clone() {
+				// TODO Auto-generated method stub
+				return null;
 			}
-		} else {
-			// In Synchronous mode, a node is only allowed to send messages during the 
-			// execution of its step. We can easily schedule to send this message during the
-			// next step by setting a timer. The MessageTimer from the default project already
-			// implements the desired functionality.
-			MessageTimer t;
-			if(to != null) {
-				t = new MessageTimer(msg, to); // unicast
-			} else {
-				t = new MessageTimer(msg); // multicast
-			}
-			t.startRelative(Tools.getRandomNumberGenerator().nextDouble(), this);
+		};
+
+		m.cor = c;
+		m.id = to.ID;
+
+		mensage[posicaoAtual] = m;
+		System.out.println("id receptor: " + ID + " ID Atual: " + m.id + " Cor: " + m.cor.getRGB());
 		}
 	}
-	
-	
+
 }
