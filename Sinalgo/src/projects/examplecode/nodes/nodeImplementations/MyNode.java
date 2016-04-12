@@ -76,8 +76,6 @@ public class MyNode extends Node {
 		return mensagens;
 	}
 
-	
-
 	public boolean isColored() {
 		return isColored;
 	}
@@ -197,7 +195,8 @@ public class MyNode extends Node {
 		S4Message msg = new S4Message();
 		msg.color = c;
 		msg.ID = to.ID;
-		//System.out.println( "ID Atual: " + msg.ID + " Cor: " + msg.color.getRGB() + "id receptor: " + ID + " Cor ");
+		// System.out.println( "ID Atual: " + msg.ID + " Cor: " +
+		// msg.color.getRGB() + "id receptor: " + ID + " Cor ");
 		mensagens.add(msg);
 
 	}

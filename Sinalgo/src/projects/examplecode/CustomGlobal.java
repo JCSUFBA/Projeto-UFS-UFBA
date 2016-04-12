@@ -46,12 +46,9 @@ import java.util.Comparator;
 import java.util.Random;
 import javax.swing.JOptionPane;
 import projects.examplecode.nodes.nodeImplementations.MyNode;
-import projects.sample4.nodes.messages.S4Message;
-import sinalgo.nodes.messages.Message;
 import sinalgo.runtime.AbstractCustomGlobal;
 import sinalgo.tools.Tools;
 import sinalgo.tools.logging.Logging;
-import sun.awt.image.ImageRepresentation;
 
 /**
  * This class holds customized global state and methods for the framework. The
@@ -73,6 +70,8 @@ import sun.awt.image.ImageRepresentation;
  *      or via a button that is added to the GUI.
  */
 
+
+// Metodo de ordenação que compara o nó com maior numero de vizinhos
 class ComparadorDeNos implements Comparator<MyNode> {
 	public int compare(MyNode node1, MyNode node2) {
 
@@ -95,6 +94,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	// define o meu raio de alcance
 	private final double raio = 1000.0;
 
+	//array onde será guardado o vetor com Delta*4 cores
 	ArrayList<Color> cores;
 
 	/**
@@ -130,6 +130,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		inicializaVertices();
 	}
 
+	
 	private void determinaPrioridade() {
 
 		// Obtém a lista das distâncias dos vizinhos de um salto de cada vértice
@@ -145,6 +146,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 	}
 
+	///
 	private ArrayList<Integer> retornaListaDistancias(int vertice) {
 		ArrayList<Integer> vizinhos = new ArrayList<>();
 
@@ -235,9 +237,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 		// esse vetor é o (delta*4) ou seja, o vetor que tem o tamanho da
 		// quantidade de vizinhos do no com a maior prioridade
-		// cores = (myNodes.get(0).getVizinhos().size() > 0) ? new
-		// Color[myNodes.get(0).getVizinhos().size() * 4]
-		// : new Color[1];
+		
 		int quantidadeCores = (myNodes.get(0).getVizinhos().size() > 0) ? myNodes.get(0).getVizinhos().size() * 4 : 1;
 		// metodo responsavel por realizar a adição de todas as cores no vetor
 		CriarVetorDeCores(quantidadeCores);
@@ -248,19 +248,12 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		Tools.getGraphPanel().forceDrawInNextPaint();
 		Tools.getGraphPanel().repaint();
 
-		// imprimo cada no com seus respectivos vizinhos
-		// =============================================
-		// NÓ ATUAL ID: 14
-		// COR: 16344315
-		// _____________________________________________
-		// VIZINHO ID: 23
-		// COR: 3135670
-		// =============================================
-
 		ImprimirNo();
 
 	}
-
+	
+	
+//Array com o tamanho maximo da quantidade de vizinhos do nó (Delta)
 	private void setarTamanhoArray() {
 
 		for (MyNode no : myNodes) {
@@ -269,7 +262,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	}
 
 	/**
-	 * metodo responsavel por imprimir todos os vizinhos de cada no que pasasr
+	 * metodo responsavel por imprimir todos os vizinhos de cada no que passar
 	 * pelo parametro
 	 * 
 	 * @param node
@@ -286,15 +279,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 				if (vizinho == nodeTwo.ID) {
 					imprimir += String.format("%10s", "ID: ");
 					imprimir += String.format("%-5s", vizinho) + "\n";
-
-					// System.out.print(String.format("%10s", "COR: "));
-					// System.out
-					// .print(String.format("%-10s",
-					// nodeTwo.getColor().toString().replace("java.awt.Color",
-					// "")));
-					// System.out.println();
-					// System.out.print(String.format("%10s", "OU"));
-					// System.out.println();
 
 					imprimir += String.format("%10s", "COR: ");
 					imprimir += String.format("%-10s", nodeTwo.getColor().getRGB() * (-1)) + "\n";
@@ -318,9 +302,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 */
 	private void ImprimirNo() {
 
-		// System.out.print(String.format("%-50s", "#================ RESULTADO
-		// ================#"));
-		// System.out.println();
 		imprimir += String.format("%-5s", "Quantidade de Cores Utilizadas para Colorir a Rede: ");
 		imprimir += String.format("%-5s", cores.size()) + "\n";
 
@@ -330,15 +311,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			imprimir += String.format("%-5s", "ID: ");
 			imprimir += String.format("%-5s", myNodes.get(i).ID) + "\n";
 
-			// System.out.print(String.format("%-5s", "COR: "));
-			//
-			// System.out
-			// .print(String.format("%-10s",
-			// myNodes.get(i).getColor().toString().replace("java.awt.Color",
-			// "")));
-			// System.out.println();
-			// System.out.print(String.format("%-5s", "OU"));
-			// System.out.println();
 			imprimir += String.format("%-5s", "COR: ");
 			imprimir += String.format("%-10s", myNodes.get(i).getColor().getRGB() * (-1)) + "\n";
 			imprimir += String.format("%-5s", "POSICAO X: ");
@@ -359,11 +331,16 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	/**
 	 * metodo responsavel por colorir os nos e seus vizinhos
 	 */
+	
+	
+
 	private void determinarCor() {
 
 		// atributo o qual serve de posicao para recuperar a cor no array de
 		// cores
 		int corSelecionada;
+		
+		//Loop responsavel por realizar a coloração Delta cores
 		for (int i = 0; i < myNodes.get(0).getCores().length; i++) {
 
 			// loop varre cada no realizando a coloração atual e dos seus
@@ -386,10 +363,10 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			}
 			resetarCor();
 		}
-		
+
 	}
 
-
+	//Reseta o atributo informando que não esta mais colorido
 	private void resetarCor() {
 		for (MyNode no : myNodes) {
 
@@ -431,13 +408,13 @@ public class CustomGlobal extends AbstractCustomGlobal {
 					// realiza o processo de coloração dos vizinhos
 					posicaoVizinho = AcharId(vizinho);
 
-					// testa se o no vizinho atual está pitado caso não esteja
-					// ele realiza a pintura
+					// testa se o no vizinho atual está colorido caso não esteja
+					// ele realiza a coloração
 					if (posicaoVizinho >= 0) {
 						if (!myNodes.get(posicaoVizinho).isColored()) {
 							if (cores.size() > 0) {
 								// adiciona a cor ao no
-								// nodeTwo.setColor(cores[corSelecionada]);
+								
 								myNodes.get(posicaoVizinho).setColor(cores.get(corSelecionada));
 
 								// informa que o no já esta colorido
@@ -452,7 +429,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 					}
 				}
 
-				// caso a cor esteja em uso ja ele gera uma nova cor e volta
+				// caso a cor esteja em uso ele gera uma nova cor e volta
 				// para o
 				corSelecionada = randomDeCores();
 
@@ -461,17 +438,8 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		}
 	}
 
-	/**
-	 * realiza o teste de validação de cada vizinho, ou seja, ele testa todos os
-	 * vizinhos e o no atual desse vizinho para saber se tem algum nó com a
-	 * mesma cor
-	 * 
-	 * 
-	 * @param node
-	 * @param corSelecionada
-	 * @return
-	 */
-	private boolean conflitoVizinho(int noVizinho, int corSelecionada, MyNode noAtualAovizinhoOrigem) {
+	// Testa se existe conflito entre as cores dos vizinhos 
+	 private boolean conflitoVizinho(int noVizinho, int corSelecionada, MyNode noAtualAovizinhoOrigem) {
 		for (MyNode nodeAtual : myNodes) {
 			if (cores.size() > 0) {
 				if (noVizinho != nodeAtual.ID) {
@@ -498,9 +466,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 	/**
 	 * realiza o teste de validação de cada vizinho, ou seja, ele testa todos os
-	 * viziho e o no de atual desse vizinho para saber se tem algum com a mesma
-	 * com que foi gerada
-	 * 
+	 * vizinhos.
 	 * @param node
 	 * @param corSelecionada
 	 * @return
@@ -583,7 +549,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			}
 		}
 	}
-
+//Envia uma mensagem do no atual para todos os seus vizinhos
 	private void enviarMensagem(MyNode noAtual) {
 
 		for (int idVizinho : noAtual.getVizinhos()) {
@@ -607,7 +573,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	}
 
 	/**
-	 * criar vetores de cores de delta * 4 obs: não entendi
+	 * criar vetores de cores de delta * 4 
 	 * 
 	 * @param cores
 	 */
