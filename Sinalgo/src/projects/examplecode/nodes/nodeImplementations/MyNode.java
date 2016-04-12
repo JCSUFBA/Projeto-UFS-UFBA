@@ -40,7 +40,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import projects.defaultProject.nodes.timers.MessageTimer;
 import projects.sample4.nodes.messages.S4Message;
@@ -61,38 +61,39 @@ public class MyNode extends Node {
 	Logging myLog = Logging.getLogger("logxxx.txt");
 	private ArrayList<Integer> vizinhos;
 	private boolean isColored;
-	Message[] mensage;
-	int posicaoAtual;
+	private Color[] cores;
+	private int posicao;
+
+	private List<S4Message> mensagens;
 
 	public MyNode() {
 		this.isColored = false;
 		this.vizinhos = new ArrayList<>();
-		this.posicaoAtual = 0;
+		this.mensagens = new ArrayList<S4Message>();
 	}
 
-	public Message[] getMensageAll() {
-		return mensage;
+	public List<S4Message> getMensagensAll() {
+		return mensagens;
 	}
 
-	public void setMensage(Message[] mensage) {
-		this.mensage = mensage;
-	}
-
-	public int getPosicaoAtual() {
-		return posicaoAtual;
-	}
-
-	public void setPosicaoAtual() {
-		if (this.posicaoAtual < this.mensage.length)
-			this.posicaoAtual++;
-	}
-
-	public void setTamanho(int tamanho) {
-		this.mensage = new Message[tamanho];
-	}
+	
 
 	public boolean isColored() {
 		return isColored;
+	}
+
+	public void setTamanhoVetorCores(int tamanho) {
+		cores = new Color[tamanho];
+		posicao = 0;
+	}
+
+	public void setColorAtual(Color color) {
+		cores[posicao] = color;
+		posicao++;
+	}
+
+	public Color[] getCores() {
+		return cores;
 	}
 
 	public void setColored(boolean isColored) {
@@ -193,23 +194,12 @@ public class MyNode extends Node {
 	 *            message.
 	 */
 	public void sendColorMessage(Color c, Node to) {
-		
-		if (this.posicaoAtual < this.mensage.length){
-		Message m = new Message() {
+		S4Message msg = new S4Message();
+		msg.color = c;
+		msg.ID = to.ID;
+		//System.out.println( "ID Atual: " + msg.ID + " Cor: " + msg.color.getRGB() + "id receptor: " + ID + " Cor ");
+		mensagens.add(msg);
 
-			@Override
-			public Message clone() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
-
-		m.cor = c;
-		m.id = to.ID;
-
-		mensage[posicaoAtual] = m;
-		System.out.println("id receptor: " + ID + " ID Atual: " + m.id + " Cor: " + m.cor.getRGB());
-		}
 	}
 
 }
