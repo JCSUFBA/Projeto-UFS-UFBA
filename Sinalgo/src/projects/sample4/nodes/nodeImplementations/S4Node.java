@@ -128,9 +128,6 @@ public class S4Node extends Node {
 		}
 	}
 	
-	
-	
-	
 	@NodePopupMethod(menuText="Unicast Gray")
 	public void unicastGRAY() {
 		Tools.getNodeSelectedByUser(new NodeSelectionHandler() {
