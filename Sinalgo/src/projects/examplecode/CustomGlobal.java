@@ -332,7 +332,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 */
 
 	private void determinarCor() {
-		
+
 		// atributo o qual serve de posicao para recuperar a cor no array de
 		// cores
 		Cor corSelecionada = new Cor();
@@ -360,23 +360,23 @@ public class CustomGlobal extends AbstractCustomGlobal {
 				// atual "node"
 				colorirVizinhoNew(node, corSelecionada);
 			}
-			
+
 			resetarCor();
 			anularCores();
 
 		}
-		imprimirTodasAsCoresNoAtual();
-	}
-
-	private void imprimirTodasAsCoresNoAtual() {
-		for (MyNode no : myNodes) {
-			System.out.println("No Principal: " + no.ID);
-			for (Color cor : no.getCores()) {
-				System.out.println("Cor: " + cor.getRGB());
-			}
-		}
 
 	}
+
+	// private void imprimirTodasAsCoresNoAtual() {
+	// for (MyNode no : myNodes) {
+	// System.out.println("No Principal: " + no.ID);
+	// for (Color cor : no.getCores()) {
+	// System.out.println("Cor: " + cor.getRGB());
+	// }
+	// }
+	//
+	// }
 
 	// Reseta o atributo informando que não esta mais colorido
 	private void resetarCor() {
@@ -397,12 +397,11 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 		}
 
-
 	}
 
 	private void gerarVetorAlternativoDeCores() {
 		posicaoCor = new ArrayList<Integer>();
-		
+
 		newRandom();
 	}
 
@@ -611,7 +610,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 					if (!posicaoCor.contains(posicao)) {
 						posicaoCor.add(posicao);
-						System.out.println("Adicionou: " + posicao);
+
 						adicionarCor = true;
 					}
 
@@ -641,8 +640,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 			cor = cores.get(posicaoCor.get(aleatorio.nextInt(posicaoCor.size())));
 			removida = cor.isRemovida();
-
-			System.out.println(removida);
 
 		}
 
