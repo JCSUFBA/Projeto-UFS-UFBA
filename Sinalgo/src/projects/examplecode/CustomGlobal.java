@@ -46,6 +46,8 @@ import java.util.Comparator;
 import java.util.Random;
 import javax.swing.JOptionPane;
 import projects.examplecode.nodes.nodeImplementations.MyNode;
+import projects.sample4.nodes.messages.S4Message;
+import sinalgo.nodes.messages.Message;
 import sinalgo.runtime.AbstractCustomGlobal;
 import sinalgo.tools.Tools;
 import sinalgo.tools.logging.Logging;
@@ -70,7 +72,6 @@ import sinalgo.tools.logging.Logging;
  *      or via a button that is added to the GUI.
  */
 
-
 // Metodo de ordenação que compara o nó com maior numero de vizinhos
 class ComparadorDeNos implements Comparator<MyNode> {
 	public int compare(MyNode node1, MyNode node2) {
@@ -92,10 +93,10 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	Logging myLog = Logging.getLogger("logxxx.txt");
 	String imprimir = String.format("%-50s", "#================ RESULTADO ================# \n");
 	// define o meu raio de alcance
-	private final double raio = 1000.0;
+	private final double raio = 100.0;
 
-	//array onde será guardado o vetor com Delta*4 cores
-	ArrayList<Color> cores;
+	// array onde será guardado o vetor com Delta*4 cores
+	ArrayList<Cor> cores;
 
 	/**
 	 * (non-Javadoc)
@@ -130,7 +131,6 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		inicializaVertices();
 	}
 
-	
 	private void determinaPrioridade() {
 
 		// Obtém a lista das distâncias dos vizinhos de um salto de cada vértice
@@ -191,7 +191,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 		// esse loop é responsavel por identificar quantos nós terão na execução
 		// e em seguinda realiza o teste de posicao de cada um dos nós
-		for (int id = 0; id < 5; id++) {
+		for (int id = 0; id < 10; id++) {
 			newNode = new MyNode();
 
 			// Determina aleatoriamente as posições x, y. O +10 é para nao
@@ -237,7 +237,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 		// esse vetor é o (delta*4) ou seja, o vetor que tem o tamanho da
 		// quantidade de vizinhos do no com a maior prioridade
-		
+
 		int quantidadeCores = (myNodes.get(0).getVizinhos().size() > 0) ? myNodes.get(0).getVizinhos().size() * 4 : 1;
 		// metodo responsavel por realizar a adição de todas as cores no vetor
 		CriarVetorDeCores(quantidadeCores);
@@ -251,9 +251,8 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		ImprimirNo();
 
 	}
-	
-	
-//Array com o tamanho maximo da quantidade de vizinhos do nó (Delta)
+
+	// Array com o tamanho maximo da quantidade de vizinhos do nó (Delta)
 	private void setarTamanhoArray() {
 
 		for (MyNode no : myNodes) {
@@ -331,18 +330,16 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	/**
 	 * metodo responsavel por colorir os nos e seus vizinhos
 	 */
-	
-	
 
 	private void determinarCor() {
 
 		// atributo o qual serve de posicao para recuperar a cor no array de
 		// cores
-		int corSelecionada;
-		
-		//Loop responsavel por realizar a coloração Delta cores
-		for (int i = 0; i < myNodes.get(0).getCores().length; i++) {
+		Cor corSelecionada = new Cor();
 
+		// Loop responsavel por realizar a coloração Delta cores
+		for (int i = 0; i < myNodes.get(0).getCores().length; i++) {
+			// anularCores();
 			// loop varre cada no realizando a coloração atual e dos seus
 			// vizinhos
 			for (MyNode node : myNodes) {
@@ -363,10 +360,22 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			}
 			resetarCor();
 		}
-
+imprimirTodasAsCoresNoAtual();
 	}
 
-	//Reseta o atributo informando que não esta mais colorido
+	private void imprimirTodasAsCoresNoAtual(){
+		for (MyNode no : myNodes) {
+			System.out.println("No Principal: "+no.ID);
+			for (Color cor: no.getCores()) {
+				System.out.println("Cor: "+ cor.getRGB());
+			}
+		}
+		
+		
+	}
+	
+	
+	// Reseta o atributo informando que não esta mais colorido
 	private void resetarCor() {
 		for (MyNode no : myNodes) {
 
@@ -375,7 +384,17 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		}
 	}
 
-	private void colorirVizinhoNew(MyNode node, int corSelecionada) {
+	private void anularCores() {
+		for (Cor cor : cores) {
+
+			if (cor.isUsada()) {
+cor.setRemovida(true);
+			}
+
+		}
+	}
+
+	private void colorirVizinhoNew(MyNode node, Cor corSelecionada) {
 		int posicaoVizinho = -1;
 
 		// atributo que serve de teste para saber se tem alguma cor igual
@@ -412,20 +431,21 @@ public class CustomGlobal extends AbstractCustomGlobal {
 					// ele realiza a coloração
 					if (posicaoVizinho >= 0) {
 						if (!myNodes.get(posicaoVizinho).isColored()) {
-							if (cores.size() > 0) {
-								// adiciona a cor ao no
-								
-								myNodes.get(posicaoVizinho).setColor(cores.get(corSelecionada));
 
-								// informa que o no já esta colorido
-								myNodes.get(posicaoVizinho).setColored(true);
-								myNodes.get(posicaoVizinho).setColorAtual(cores.get(corSelecionada));
-								enviarMensagem(myNodes.get(posicaoVizinho));
-								cores.remove(corSelecionada);
+							// adiciona a cor ao no
 
-							}
-							break;
+							myNodes.get(posicaoVizinho).setColor(corSelecionada.getCor());
+
+							// informa que o no já esta colorido
+							myNodes.get(posicaoVizinho).setColored(true);
+							myNodes.get(posicaoVizinho).setColorAtual(corSelecionada.getCor());
+							enviarMensagem(myNodes.get(posicaoVizinho));
+							cores.get(corSelecionada.getPosicao()).setUsada(true);
+							// cores.remove(corSelecionada);
+
 						}
+						break;
+
 					}
 				}
 
@@ -438,27 +458,26 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		}
 	}
 
-	// Testa se existe conflito entre as cores dos vizinhos 
-	 private boolean conflitoVizinho(int noVizinho, int corSelecionada, MyNode noAtualAovizinhoOrigem) {
+	// Testa se existe conflito entre as cores dos vizinhos
+	private boolean conflitoVizinho(int noVizinho, Cor corSelecionada, MyNode noAtualAovizinhoOrigem) {
 		for (MyNode nodeAtual : myNodes) {
-			if (cores.size() > 0) {
-				if (noVizinho != nodeAtual.ID) {
 
-					if (cores.get(corSelecionada).getRGB() == nodeAtual.getColor().getRGB()) {
+			if (noVizinho != nodeAtual.ID) {
 
-						for (int vizinho : nodeAtual.getVizinhos()) {
-							{
-								if (vizinho == noVizinho) {
-									return true;
-								}
+				if (corSelecionada.getCor().getRGB() == nodeAtual.getColor().getRGB()) {
+
+					for (int vizinho : nodeAtual.getVizinhos()) {
+						{
+							if (vizinho == noVizinho) {
+								return true;
 							}
-
 						}
-					}
 
+					}
 				}
 
 			}
+
 		}
 		return false;
 
@@ -467,32 +486,35 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	/**
 	 * realiza o teste de validação de cada vizinho, ou seja, ele testa todos os
 	 * vizinhos.
+	 * 
 	 * @param node
 	 * @param corSelecionada
 	 * @return
 	 */
 
-	private boolean conflitoCoresNoAtualInteiro(MyNode node, int corSelecionada) {
+	private boolean conflitoCoresNoAtualInteiro(MyNode node, Cor corSelecionada) {
 		int posicaoNode = -1;
-		if (cores.size() > 0) {
-			// pega todos os vizinhos do no atual
-			for (int vizinho : node.getVizinhos()) {
 
-				// retorna a posição com o no que tenha o id igual
-				posicaoNode = AcharId(vizinho);
+		// pega todos os vizinhos do no atual
+		for (int vizinho : node.getVizinhos()) {
 
-				if (posicaoNode >= 0) {
+			// retorna a posição com o no que tenha o id igual
+			posicaoNode = AcharId(vizinho);
 
-					// realiza o teste para saber se tem algum vizinho com a cor
-					// que
-					// foi
-					// sorteada se tiver alguma cor igual retorna true
-					if (myNodes.get(posicaoNode).getColor().getRGB() == cores.get(corSelecionada).getRGB()) {
-						return true;
-					}
+			if (posicaoNode >= 0) {
+
+				// realiza o teste para saber se tem algum vizinho com a cor
+				// que
+				// foi
+				// sorteada se tiver alguma cor igual retorna true
+
+				if (myNodes.get(posicaoNode).getColor().getRGB() == corSelecionada.getCor().getRGB()) {
+
+					return true;
 				}
 			}
 		}
+
 		// caso não tenha nenhum no com cor igual a atual ele retorna false
 		return false;
 	}
@@ -515,7 +537,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 * @param node
 	 */
 
-	private void colorirNoAtual(int corSelecionada, MyNode node) {
+	private void colorirNoAtual(Cor corSelecionada, MyNode node) {
 		boolean existe = true;
 
 		// testa para saber se esse nó atual ja esta colorido
@@ -531,16 +553,15 @@ public class CustomGlobal extends AbstractCustomGlobal {
 
 					// colori o no atual
 					// node.setColor(cores[corSelecionada]);
-					if (cores.size() > 0) {
-						node.setColor(cores.get(corSelecionada));
 
-						// informa que o no já foi colorido
-						node.setColored(true);
-						node.setColorAtual(cores.get(corSelecionada));
-						enviarMensagem(node);
-						cores.remove(corSelecionada);
+					node.setColor(corSelecionada.getCor());
 
-					}
+					// informa que o no já foi colorido
+					node.setColored(true);
+					node.setColorAtual(corSelecionada.getCor());
+					enviarMensagem(node);
+					cores.get(corSelecionada.getPosicao()).setUsada(true);
+
 					break;
 				}
 
@@ -549,7 +570,8 @@ public class CustomGlobal extends AbstractCustomGlobal {
 			}
 		}
 	}
-//Envia uma mensagem do no atual para todos os seus vizinhos
+
+	// Envia uma mensagem do no atual para todos os seus vizinhos
 	private void enviarMensagem(MyNode noAtual) {
 
 		for (int idVizinho : noAtual.getVizinhos()) {
@@ -566,32 +588,42 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 * 
 	 * @return
 	 */
-	private int randomDeCores() {
+	private Cor randomDeCores() {
 		Random aleatorio = new Random();
-		int posicao = cores.size() > 0 ? aleatorio.nextInt(cores.size()) : 0;
-		return posicao;
+
+		boolean removida = true;
+		Cor cor = new Cor();
+
+		while (removida) {
+			cor = new Cor();
+
+			cor = cores.get(aleatorio.nextInt(cores.size()));
+			removida = cor.isRemovida();
+		}
+
+		return cor;
 	}
 
 	/**
-	 * criar vetores de cores de delta * 4 
+	 * criar vetores de cores de delta * 4
 	 * 
 	 * @param cores
 	 */
 	private void CriarVetorDeCores(int quantidadeCores) {
-		cores = new ArrayList<Color>();
+		cores = new ArrayList<Cor>();
 		Random aleatorio = new Random();
 
 		int r;
 		int g;
 		int b;
-		Color cor;
+		Cor cor;
 
 		// adiciona a cor em todas as posiçoes do vetor de cores
 		for (int i = 0; i < quantidadeCores; i++) {
 			r = aleatorio.nextInt(256);
 			g = aleatorio.nextInt(256);
 			b = aleatorio.nextInt(256);
-			cor = new Color(r, g, b);
+			cor = new Cor(new Color(r, g, b));
 
 			// Determina uma cor única na lista, ou seja, para não haver duas
 			// cores repetidas
@@ -599,8 +631,10 @@ public class CustomGlobal extends AbstractCustomGlobal {
 				r = aleatorio.nextInt(256);
 				g = aleatorio.nextInt(256);
 				b = aleatorio.nextInt(256);
-				cor = new Color(r, g, b);
+				cor = new Cor(new Color(r, g, b));
 			}
+			
+			cor.setPosicao(i);
 			cores.add(cor);
 
 		}
