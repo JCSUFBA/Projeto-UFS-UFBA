@@ -94,7 +94,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	String imprimir = String.format("%-50s", "#================ RESULTADO ================# \n");
 	// define o meu raio de alcance
 	private final double raio = 100.0;
-
+	private ArrayList<Integer> posicaoCor;
 	// array onde será guardado o vetor com Delta*4 cores
 	ArrayList<Cor> cores;
 
@@ -332,13 +332,15 @@ public class CustomGlobal extends AbstractCustomGlobal {
 	 */
 
 	private void determinarCor() {
-
+		
 		// atributo o qual serve de posicao para recuperar a cor no array de
 		// cores
 		Cor corSelecionada = new Cor();
 
 		// Loop responsavel por realizar a coloração Delta cores
 		for (int i = 0; i < myNodes.get(0).getCores().length; i++) {
+			gerarVetorAlternativoDeCores();
+
 			// anularCores();
 			// loop varre cada no realizando a coloração atual e dos seus
 			// vizinhos
@@ -358,25 +360,27 @@ public class CustomGlobal extends AbstractCustomGlobal {
 				// atual "node"
 				colorirVizinhoNew(node, corSelecionada);
 			}
+			
 			resetarCor();
+			anularCores();
+
 		}
-imprimirTodasAsCoresNoAtual();
+		imprimirTodasAsCoresNoAtual();
 	}
 
-	private void imprimirTodasAsCoresNoAtual(){
+	private void imprimirTodasAsCoresNoAtual() {
 		for (MyNode no : myNodes) {
-			System.out.println("No Principal: "+no.ID);
-			for (Color cor: no.getCores()) {
-				System.out.println("Cor: "+ cor.getRGB());
+			System.out.println("No Principal: " + no.ID);
+			for (Color cor : no.getCores()) {
+				System.out.println("Cor: " + cor.getRGB());
 			}
 		}
-		
-		
+
 	}
-	
-	
+
 	// Reseta o atributo informando que não esta mais colorido
 	private void resetarCor() {
+
 		for (MyNode no : myNodes) {
 
 			no.setColored(false);
@@ -388,10 +392,18 @@ imprimirTodasAsCoresNoAtual();
 		for (Cor cor : cores) {
 
 			if (cor.isUsada()) {
-cor.setRemovida(true);
+				cor.setRemovida(true);
 			}
 
 		}
+
+
+	}
+
+	private void gerarVetorAlternativoDeCores() {
+		posicaoCor = new ArrayList<Integer>();
+		
+		newRandom();
 	}
 
 	private void colorirVizinhoNew(MyNode node, Cor corSelecionada) {
@@ -583,6 +595,34 @@ cor.setRemovida(true);
 
 	}
 
+	private void newRandom() {
+		Random aleatorio = new Random();
+		int posicao = 0;
+		boolean adicionarCor = false;
+
+		for (int i = 0; i < (myNodes.get(0).getVizinhos().size() + 1); i++) {
+			posicao = cores.get(aleatorio.nextInt(cores.size())).getPosicao();
+			adicionarCor = false;
+			while (!adicionarCor) {
+
+				posicao = cores.get(aleatorio.nextInt(cores.size())).getPosicao();
+
+				if (!cores.get(posicao).isRemovida()) {
+
+					if (!posicaoCor.contains(posicao)) {
+						posicaoCor.add(posicao);
+						System.out.println("Adicionou: " + posicao);
+						adicionarCor = true;
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
 	/**
 	 * metodo responsavel por retornar aleatoriamente a posição da cor
 	 * 
@@ -592,13 +632,18 @@ cor.setRemovida(true);
 		Random aleatorio = new Random();
 
 		boolean removida = true;
+
 		Cor cor = new Cor();
 
 		while (removida) {
+
 			cor = new Cor();
 
-			cor = cores.get(aleatorio.nextInt(cores.size()));
+			cor = cores.get(posicaoCor.get(aleatorio.nextInt(posicaoCor.size())));
 			removida = cor.isRemovida();
+
+			System.out.println(removida);
+
 		}
 
 		return cor;
@@ -633,7 +678,7 @@ cor.setRemovida(true);
 				b = aleatorio.nextInt(256);
 				cor = new Cor(new Color(r, g, b));
 			}
-			
+
 			cor.setPosicao(i);
 			cores.add(cor);
 
