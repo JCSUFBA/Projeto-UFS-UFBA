@@ -227,6 +227,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		// que tem a maior quantidade de vizinhos
 		determinaVizinho();
 
+		enviarIdVizinhoAndNoAtual();
 		// esse vetor é o (delta*4) ou seja, o vetor que tem o tamanho da
 		// quantidade de vizinhos do no com a maior prioridade
 
@@ -241,6 +242,20 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		Tools.getGraphPanel().repaint();
 
 		ImprimirNo();
+
+	}
+
+	// troca de mensagens entre o no atual e o vizinho para cada um enviar id ao
+	// outro
+	private void enviarIdVizinhoAndNoAtual() {
+		int posicao = -1;
+		for (MyNode node : myNodes) {
+			for (int vizinho : node.getVizinhos()) {
+				posicao = AcharId(vizinho);
+				myNodes.get(posicao).sendMessage(node.ID, true);
+				node.sendMessage(vizinho, false);
+			}
+		}
 
 	}
 
@@ -360,7 +375,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
 		for (MyNode no : myNodes) {
 
 			no.setColored(false);
-			no.setColor(new Color(0,0,0));
+			no.setColor(new Color(0, 0, 0));
 		}
 	}
 

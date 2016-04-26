@@ -63,6 +63,8 @@ public class MyNode extends Node {
 	private boolean isColored;
 	private Color[] cores;
 	private int posicao;
+	private ArrayList<Integer> idNoAtuais;
+	private ArrayList<Integer> idVizinhos;
 
 	private List<S4Message> mensagens;
 
@@ -70,6 +72,8 @@ public class MyNode extends Node {
 		this.isColored = false;
 		this.vizinhos = new ArrayList<>();
 		this.mensagens = new ArrayList<S4Message>();
+		this.idNoAtuais = new ArrayList<Integer>();
+		this.idVizinhos = new ArrayList<Integer>();
 	}
 
 	public List<S4Message> getMensagensAll() {
@@ -198,6 +202,16 @@ public class MyNode extends Node {
 		// System.out.println( "ID Atual: " + msg.ID + " Cor: " +
 		// msg.color.getRGB() + "id receptor: " + ID + " Cor ");
 		mensagens.add(msg);
+
+	}
+
+	public void sendMessage(int id, boolean isIdNoAtual) {
+
+		if (!isIdNoAtual) {
+			this.idVizinhos.add(id);
+		} else {
+			this.idNoAtuais.add(id);
+		}
 
 	}
 
