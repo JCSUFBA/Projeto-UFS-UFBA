@@ -63,8 +63,6 @@ public class MyNode extends Node {
 	private boolean isColored;
 	private Color[] cores;
 	private int posicao;
-	private ArrayList<Integer> idNoAtuais;
-	private ArrayList<Integer> idVizinhos;
 
 	private List<S4Message> mensagens;
 
@@ -72,8 +70,7 @@ public class MyNode extends Node {
 		this.isColored = false;
 		this.vizinhos = new ArrayList<>();
 		this.mensagens = new ArrayList<S4Message>();
-		this.idNoAtuais = new ArrayList<Integer>();
-		this.idVizinhos = new ArrayList<Integer>();
+
 	}
 
 	public List<S4Message> getMensagensAll() {
@@ -113,7 +110,17 @@ public class MyNode extends Node {
 	@Override
 	public void handleMessages(Inbox inbox) {
 		while (inbox.hasNext()) {
-			Message m = (Message) inbox.next();
+			Message msg = inbox.next();
+			if (msg instanceof S4Message) {
+				S4Message m = (S4Message) msg;
+				// green and yellow messages are forwarded to all neighbors
+				if (m.color == Color.GREEN && !this.getColor().equals(m.color)) {
+					broadcast(m);
+				} else if (m.color == Color.YELLOW && !this.getColor().equals(m.color)) {
+					broadcast(m);
+				}
+				this.setColor(m.color); // set this node's color
+			}
 		}
 	}
 
@@ -198,21 +205,29 @@ public class MyNode extends Node {
 	public void sendColorMessage(Color c, Node to) {
 		S4Message msg = new S4Message();
 		msg.color = c;
-		msg.ID = to.ID;
-		// System.out.println( "ID Atual: " + msg.ID + " Cor: " +
-		// msg.color.getRGB() + "id receptor: " + ID + " Cor ");
-		mensagens.add(msg);
-
-	}
-
-	public void sendMessage(int id, boolean isIdNoAtual) {
-
-		if (!isIdNoAtual) {
-			this.idVizinhos.add(id);
+		if (Tools.isSimulationInAsynchroneMode()) {
+			// sending the messages directly is OK in async mode
+			if (to != null) {
+				send(msg, to);
+			} else {
+				broadcast(msg);
+			}
 		} else {
-			this.idNoAtuais.add(id);
+			// In Synchronous mode, a node is only allowed to send messages
+			// during the
+			// execution of its step. We can easily schedule to send this
+			// message during the
+			// next step by setting a timer. The MessageTimer from the default
+			// project already
+			// implements the desired functionality.
+			MessageTimer t;
+			if (to != null) {
+				t = new MessageTimer(msg, to); // unicast
+			} else {
+				t = new MessageTimer(msg); // multicast
+			}
+			t.startRelative(Tools.getRandomNumberGenerator().nextDouble(), this);
 		}
-
 	}
 
 }
