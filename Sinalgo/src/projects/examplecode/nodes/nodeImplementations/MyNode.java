@@ -114,11 +114,8 @@ public class MyNode extends Node {
 			if (msg instanceof S4Message) {
 				S4Message m = (S4Message) msg;
 				// green and yellow messages are forwarded to all neighbors
-				if (m.color == Color.GREEN && !this.getColor().equals(m.color)) {
-					broadcast(m);
-				} else if (m.color == Color.YELLOW && !this.getColor().equals(m.color)) {
-					broadcast(m);
-				}
+				
+					broadcast(m);				
 				this.setColor(m.color); // set this node's color
 			}
 		}
